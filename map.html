@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrepreneur competence map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --panel:#E4E5E1; --face:#F5F5F2; --ink:#1D2126; --slate:#61666D; --hair:#C9CBC6;
+  --dye-1:96 82 176; --dye-2:27 122 96; --dye-3:186 78 48; --dye-4:166 112 18; --dye-0:97 102 109;
+  --wedge:.06; --fill:.14;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --panel:#15171A; --face:#1E2126; --ink:#E9EAE6; --slate:#9AA0A6; --hair:#343840;
+    --dye-1:158 148 238; --dye-2:80 188 150; --dye-3:230 130 96; --dye-4:226 168 62; --dye-0:150 156 163;
+    --wedge:.095; --fill:.22;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--panel);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:40px 28px 72px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);margin:0 0 10px}
+h1{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 600;font-size:clamp(29px,4.2vw,44px);line-height:1.05;letter-spacing:-.012em;margin:0 0 12px}
+.sub{max-width:62ch;color:var(--slate);margin:0}
+header{border-bottom:1px solid var(--hair);padding-bottom:26px;margin-bottom:22px}
+
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+.key{display:inline-flex;align-items:center;gap:8px;padding:6px 13px 6px 10px;border:1px solid var(--hair);background:var(--face);border-radius:2px;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink)}
+.key .dot{width:9px;height:9px;border-radius:50%;background:rgb(var(--d));flex:none}
+.key:hover,.key:focus-visible{border-color:rgb(var(--d));outline:none}
+.key.ext{border-style:dashed}
+.toggle{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate);cursor:pointer;user-select:none}
+.toggle input{accent-color:rgb(var(--dye-0));width:15px;height:15px;cursor:pointer;margin:0}
+
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:30px;align-items:start}
+@media (max-width:960px){.layout{grid-template-columns:1fr}}
+.stage{background:var(--face);border:1px solid var(--hair);border-radius:3px;padding:10px}
+svg{display:block;width:100%;height:auto}
+
+.ring{fill:none;stroke:var(--hair);stroke-width:.75;stroke-dasharray:2 7}
+.ring.stage{stroke-dasharray:none;opacity:.75}
+.rim{fill:none;stroke:var(--hair);stroke-width:1}
+.spoke{stroke:var(--hair);stroke-width:.75}
+.spoke.on{stroke:rgb(var(--d));stroke-width:2}
+.hub{fill:var(--face);stroke:var(--hair);stroke-width:.75}
+.hublabel{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;fill:var(--slate);text-transform:uppercase}
+.code{font-family:"IBM Plex Mono",monospace;font-size:12px;fill:var(--slate);cursor:pointer}
+.code:hover,.code.on{fill:rgb(var(--d));font-weight:500}
+.code:focus{outline:none}
+.code:focus-visible{outline:1px dashed rgb(var(--d));outline-offset:4px}
+.code.on{fill:rgb(var(--d))}
+.poly{fill:rgb(var(--dye-0)/.13);stroke:rgb(var(--dye-0));stroke-width:1.5}
+.vtx{fill:rgb(var(--dye-0))}
+.vtx.none{fill:var(--face);stroke:rgb(var(--dye-0));stroke-width:1.2;stroke-dasharray:2 2}
+.mark{fill:rgb(var(--d));stroke:var(--face);stroke-width:1.5}
+.reach{stroke:rgb(var(--d));stroke-width:2;stroke-linecap:round}
+.bandarc{fill:none;stroke:rgb(var(--d));stroke-width:1;stroke-dasharray:3 4;opacity:.6}
+@media (prefers-reduced-motion:no-preference){.spoke,.code{transition:stroke .18s,fill .18s}}
+
+.readout{background:var(--face);border:1px solid var(--hair);border-radius:3px;padding:26px 26px 30px;position:sticky;top:24px}
+@media (max-width:960px){.readout{position:static}}
+.rhead{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap;margin-bottom:2px}
+.badge{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;letter-spacing:.06em;padding:3px 8px;border-radius:2px;background:rgb(var(--d)/var(--fill));color:rgb(var(--d))}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--slate)}
+.rname{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 116,"wght" 600;font-size:26px;line-height:1.14;letter-spacing:-.01em;margin:7px 0 3px}
+.rarea{font-size:13px;color:var(--slate);margin:0 0 18px}
+.brief{margin:0 0 20px;padding-left:14px;border-left:2px solid rgb(var(--d))}
+h3{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--slate);margin:0 0 11px;padding-top:18px;border-top:1px solid var(--hair)}
+.req{display:grid;gap:8px;font-size:13.5px;margin-bottom:2px}
+.req div{display:grid;grid-template-columns:128px 1fr;gap:10px}
+.req dt{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--slate);margin:2px 0 0}
+.req dd{margin:0}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:3px 8px;border-radius:2px;border:0;cursor:pointer;background:rgb(var(--p)/.15);color:rgb(var(--p));font-weight:500}
+.pill:hover,.pill:focus-visible{background:rgb(var(--p)/.32);outline:none}
+.scale{display:grid;gap:0}
+.rung{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13.5px}
+.rung:last-child{border-bottom:0}
+.rung .n{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate);padding-top:2px}
+.rung.top .n{color:rgb(var(--d));font-weight:500}
+ul{margin:0;padding:0;list-style:none}
+ul li{position:relative;padding-left:20px;margin-bottom:8px;font-size:14px}
+ul li::before{content:"";position:absolute;left:2px;top:10px;width:7px;height:1px;background:rgb(var(--d))}
+.note{font-size:13px;color:var(--slate);margin:0}
+.lvl{display:flex;align-items:baseline;gap:10px;margin:0 0 4px}
+.lvlnum{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 112,"wght" 600;font-size:30px;color:rgb(var(--d))}
+.empty .big{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 112,"wght" 500;font-size:19px;margin:0 0 6px}
+
+.index{margin-top:44px;border-top:1px solid var(--hair);padding-top:30px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px}
+.col h4{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 110,"wght" 600;font-size:15px;margin:0 0 2px}
+.col .sub2{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--slate);margin:0 0 12px}
+.col button{display:block;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--hair);padding:8px 0;cursor:pointer;color:var(--ink);font:inherit;font-size:13.5px}
+.col button:hover,.col button:focus-visible{color:rgb(var(--dye-0));outline:none;padding-left:4px}
+.col button .c{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--slate);margin-right:9px}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--hair);color:var(--slate);font-size:12.5px;max-width:80ch}
+footer p{margin:0 0 8px}
+@media (max-width:560px){.wrap{padding:28px 15px 56px}.stage{padding:4px}.readout{padding:20px 18px 24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">FEONA &middot; entrepreneur track</p>
+  <h1>Entrepreneur competence map</h1>
+  <p class="sub">Twenty spokes, one per competence. Eight rings, from foundation at the centre to expert at the rim. Challenges do not chain &mdash; each one casts evidence onto several competences at once, which is why this is a wheel and not a tree. Select a challenge or a spoke.</p>
+</header>
+
+<div class="bar" id="bar"></div>
+
+<div class="layout">
+  <div class="stage"><svg id="wheel" viewBox="0 0 940 940" role="img" aria-labelledby="wt wd"><title id="wt">Entrepreneur competence wheel</title><desc id="wd">Twenty spokes grouped into four coloured quadrants: ideas and opportunities, resources, into action, and emotions. Eight concentric rings mark progression levels. A polygon shows an example evidence profile.</desc></svg></div>
+  <aside class="readout" id="readout" aria-live="polite"></aside>
+</div>
+
+<section class="index">
+  <p class="eyebrow">Challenges</p>
+  <div class="cols" id="cols"></div>
+</section>
+
+<footer>
+  <p>Areas 1&ndash;3, their five competences each, and the numbering all follow EntreComp, the European Entrepreneurship Competence Framework (Bacigalupo, Kampylis, Punie &amp; Van den Brande, 2016), which sets out fifteen competences across three areas on an eight-level progression.</p>
+  <p><strong>Area 4 is an extension and is not part of EntreComp.</strong> It is drawn from Lack&eacute;us, whose action-reflection challenges group into Ideas, Resources, Actions and Emotions, and whose assessment approach is emotion-based. Treat area 4 as a proposal to be validated, not as a standard.</p>
+  <p>Every challenge must create value for someone outside the cohort &mdash; mentors and peers excluded (Lack&eacute;us, OECD 2015). Competence develops whether or not the value creation succeeds, so a failed ask still writes to the profile. Indicator scales are graded novice to expert using effectuation (Sarasvathy), where the expert&ndash;novice contrast is empirically documented rather than invented. The method of scoring by scaled behavioural indicators instead of Likert self-report follows Schelfhout, Bruggeman &amp; De Maeyer (2016).</p>
+  <p>No instrument in this literature has shown that a competence profile predicts venture outcomes. This map evidences development, not destiny.</p>
+</footer>
+
+</div>
+
+<script>
+const CX=470, CY=470, HUB=60, STEP=42, RIM=404, CODER=424;
+const rOf = lv => HUB + lv*STEP;
+
+const AREAS=[
+ {id:1,name:"Ideas & opportunities",src:"EntreComp area 1"},
+ {id:2,name:"Resources",src:"EntreComp area 2"},
+ {id:3,name:"Into action",src:"EntreComp area 3"},
+ {id:4,name:"Emotions",src:"Extension \u2014 not in EntreComp"}
+];
+const BANDS={
+ 1:{name:"Foundation",sub:"value created with external support",r:rOf(1.5)},
+ 2:{name:"Intermediate",sub:"increasing autonomy",r:rOf(3.5)},
+ 3:{name:"Advanced",sub:"taking responsibility",r:rOf(5.5)}
+};
+
+const COMP=[
+ {c:"1.1",n:"Spotting opportunities",d:"Notice needs and gaps that could become value for someone else."},
+ {c:"1.2",n:"Creativity",d:"Develop several routes to the same value, including the unobvious ones."},
+ {c:"1.3",n:"Vision",d:"Describe a future state clearly enough that others can work toward it."},
+ {c:"1.4",n:"Valuing ideas",d:"Judge which idea is worth resource, and on what evidence."},
+ {c:"1.5",n:"Ethical & sustainable thinking",d:"Account for who bears the cost of the idea working."},
+ {c:"2.1",n:"Self-awareness & self-efficacy",d:"Know what you can do, and act on that rather than on hope."},
+ {c:"2.2",n:"Motivation & perseverance",d:"Stay on the task when the task stops being interesting."},
+ {c:"2.3",n:"Mobilising resources",d:"Obtain what you need from people who owe you nothing."},
+ {c:"2.4",n:"Financial & economic literacy",d:"Make the money arithmetic explicit, and correct."},
+ {c:"2.5",n:"Mobilising others",d:"Get commitment from people you cannot instruct."},
+ {c:"3.1",n:"Taking the initiative",d:"Act before being asked, and before the picture is complete."},
+ {c:"3.2",n:"Planning & management",d:"Sequence the work, define what done means, hold to it."},
+ {c:"3.3",n:"Coping with uncertainty & risk",d:"Decide with a bounded downside instead of waiting for certainty."},
+ {c:"3.4",n:"Working with others",d:"Define the join, then move your own half when it fails."},
+ {c:"3.5",n:"Learning through experience",d:"Change one thing, predict, measure, revise the belief."},
+ {c:"4.1",n:"Exposure",d:"Act while visible to people outside the group, before it is finished."},
+ {c:"4.2",n:"Rejection recovery",d:"What you do in the hours after a refusal."},
+ {c:"4.3",n:"Identity work",d:"How you describe your role to someone who does not know you."},
+ {c:"4.4",n:"Emotional naming",d:"Recognise the feeling at a decision point, and report what it made you do."},
+ {c:"4.5",n:"Endurance",d:"Sustain effort when feedback is absent rather than negative."}
+];
+
+const PROFILE={"1.1":4,"1.2":3,"1.3":3,"1.4":4,"1.5":2,"2.1":3,"2.2":5,"2.3":4,"2.4":0,"2.5":4,
+ "3.1":5,"3.2":2,"3.3":4,"3.4":3,"3.5":5,"4.1":4,"4.2":5,"4.3":3,"4.4":2,"4.5":0};
+
+const NODES=[
+{c:"F1",n:"means inventory",band:1,
+ brief:"List who you are, what you know and whom you know. Produce three value propositions that need nothing you do not already have. Show them to one person outside the cohort.",
+ stake:"One outsider, shown the three propositions",cap:"2 hours",val:"6 months",
+ comps:["1.1","1.3","2.1","2.3"],
+ scale:["Starts from a goal and lists what is missing","Lists means, produces one idea, and it is the goal they already had","Generates options from means, cannot name a stakeholder for any","Generates options from means, names a plausible stakeholder for each","Names the specific person each option depends on, and has spoken to one"],
+ peer:["Did the propositions require anything not already in hand?","Can they name the person they showed it to?","Which proposition did the outsider react to, and did that change anything?"],
+ art:"The means list, the three propositions, and the outsider's name and reaction",
+ emo:"What did you expect them to say, and what did you feel when they did not say it?"},
+{c:"F2",n:"ten conversations",band:1,
+ brief:"Talk to ten people who might have the problem. Do not pitch. Report what you had wrong.",
+ stake:"Ten people outside the cohort",cap:"6 hours",val:"6 months",
+ comps:["1.1","1.4","3.1","3.5","4.1"],
+ scale:["Talks to fewer than three, all already known to them","Talks to ten but pitches, and collects agreement","Talks to ten without pitching, reports what was said","Reports at least one belief the conversations falsified","Changed the target problem, and can say which conversation did it"],
+ peer:["Ten distinct people, or three people three times?","Name one thing they believed before and no longer believe","Did they pitch? Check the interviewee's side of it"],
+ art:"Ten names or roles with dates, and the falsified belief stated before and after",
+ emo:"Which conversation was the one you did not want to have?"},
+{c:"F3",n:"the first exposure",band:1,
+ brief:"Put your name on something unfinished, in public, where people outside the cohort can see it.",
+ stake:"A public audience outside the cohort",cap:"1 hour, plus whatever reputation you think is at stake",val:"12 months",
+ comps:["1.2","3.1","4.1","4.3"],
+ scale:["Does not publish","Publishes anonymously, or inside a closed group","Publishes publicly and by name, but only once it looks finished","Publishes something visibly unfinished, and says that it is","Invites criticism on the unfinished thing, and answers it in public"],
+ peer:["Was it public, or a closed group?","Was it actually unfinished?","Did anyone outside the cohort respond?"],
+ art:"A dated link or photograph, plus any response received",
+ emo:"What did you edit out before posting, and why?"},
+{c:"F4",n:"the unit",band:1,
+ brief:"Define one unit of what you would sell, and calculate what it costs you. Show the arithmetic.",
+ stake:"None required",cap:"3 hours",val:"6 months",
+ comps:["1.4","2.4","3.2"],
+ scale:["Gives a price with no cost behind it","Counts direct materials only","Counts materials and own time at some rate","Counts materials, time, and one cost they had forgotten","States the unit, its full cost, the margin, and which number they trust least"],
+ peer:["Is the unit actually one thing?","Is their own time in the cost?","Which input is a guess, and how large could the error be?"],
+ art:"The calculation, with the source of every number",emo:null},
+{c:"F5",n:"whose problem is it",band:1,
+ brief:"Write down who is harmed if your idea works. Then show it to one of them.",
+ stake:"One of the affected parties",cap:"2 hours",val:"12 months",
+ comps:["1.4","1.5","3.4","4.1"],
+ scale:["States that the idea has no downside","Names an abstract harm with no party attached","Names a specific affected party","Can state the harm from that party's point of view","Has spoken to one of them, and changed something as a result"],
+ peer:["Is the affected party specific enough to contact?","Did they contact them?","Did anything change afterwards?"],
+ art:"The named party and the record of the contact",
+ emo:"What were you worried they would say?"},
+{c:"F6",n:"borrowed capability",band:1,
+ brief:"Get one thing you need from someone who owes you nothing.",
+ stake:"One outsider who is under no obligation",cap:"3 hours",val:"6 months",
+ comps:["2.3","2.5","3.1","4.2"],
+ scale:["Buys it, or does without","Asks someone inside the cohort","Asks an outsider, gets a no, stops","Asks more than one outsider until one says yes","Obtains it, and can state what the giver got in return"],
+ peer:["Was the giver outside the cohort?","What did the giver get?","How many asks did it take?"],
+ art:"What was obtained, from whom, and what was offered back",
+ emo:"How long did you sit on the ask before you sent it?"},
+{c:"F7",n:"the loss cap",band:1,
+ brief:"Before spending anything, state in writing the maximum money and hours you are willing to lose on the next experiment. Run it. Report what you actually spent.",
+ stake:"None required",cap:"Set by the learner, in writing, first",val:"3 months",
+ comps:["2.4","3.2","3.3","4.5"],
+ scale:["No cap; spends until it works or until they stop","Sets a cap after starting","Sets a cap, breaches it, notices afterwards","Sets a cap, breaches it, notices during","Stops on the cap rather than on the result, and says what the cap bought in information"],
+ peer:["Was the cap written before the spend?","Was it respected?","What did they learn for the money?"],
+ art:"The written cap, dated before the spend, beside the actual spend",
+ emo:"What did stopping feel like, if you stopped?"},
+
+{c:"I1",n:"the ask",band:2,
+ brief:"Ask one person outside your cohort to commit something real: money, time, a signature, an introduction. State your affordable loss first.",
+ stake:"One outsider, asked for a real commitment",cap:"Stated before the ask",val:"3 months",
+ comps:["2.3","2.5","3.1","3.3","4.2"],
+ scale:["Asks nobody; describes the idea to peers only","Asks family, and treats encouragement as commitment","Asks a stranger, and treats a polite no as a verdict on the idea","Extracts the stated reason, and separates it from the likely real one","Converts the refusal into a revised ask to a different stakeholder"],
+ peer:["Who was asked, and were they outside the cohort?","What exactly was asked for?","What happened after the answer?"],
+ art:"Who, what, when, and what they said",
+ emo:"What did you feel in the ten minutes before the ask, and did you do it anyway?"},
+{c:"I2",n:"first paid",band:2,
+ brief:"Take money from someone outside the cohort for something you made. Any amount.",
+ stake:"A paying buyer outside the cohort",cap:"\u2014",val:"6 months",
+ comps:["1.4","2.4","2.5","3.1","4.3"],
+ scale:["No exchange takes place","Gives it away, and records interest as validation","Takes money from someone who knows them personally","Takes money from a stranger, once","Can say why the stranger paid, in the buyer's own words"],
+ peer:["Was the payer a stranger?","What did they pay for, exactly?","Can the builder state the buyer's reason in the buyer's words?"],
+ art:"The transaction record and the buyer's stated reason",
+ emo:"What did it change about how you describe yourself?"},
+{c:"I3",n:"one variable",band:2,
+ brief:"Run two versions of one thing, changing exactly one variable. Write the prediction first.",
+ stake:"An outside audience for both versions",cap:"4 hours",val:"3 months",
+ comps:["1.2","3.2","3.3","3.5"],
+ scale:["Changes several things and declares a winner","Changes one thing, but makes no prediction","Predicts, changes one thing, reports the outcome","Is wrong, and can say why the prediction was wrong","Can say whether the difference is larger than the noise"],
+ peer:["Was it genuinely one variable?","Was the prediction written first?","Could the result be chance?"],
+ art:"Both versions, the written prediction, and the outcome",emo:null},
+{c:"I4",n:"the interface",band:2,
+ brief:"Split a piece of work with someone who is not your friend. Define the join before either of you starts.",
+ stake:"One collaborator from outside your circle",cap:"\u2014",val:"6 months",
+ comps:["2.5","3.2","3.4","4.4"],
+ scale:["Works alone and calls it a split","Splits the work, and discovers the join at the end","Defines the join in writing before starting","Renegotiates the join mid-way when it fails","Moves their own half to accommodate the partner, and says why that was cheaper"],
+ peer:["Was the join written before work started?","Who moved when it broke?","Would the partner describe it the same way?"],
+ art:"The written interface, and the partner's own account",
+ emo:"What did you avoid saying to them, and what did it cost?"},
+{c:"I5",n:"the public number",band:2,
+ brief:"Make one claim about your thing that could turn out to be false. Publish it with the evidence.",
+ stake:"A public audience",cap:"\u2014",val:"3 months",
+ comps:["1.5","2.4","3.5","4.1"],
+ scale:["Makes claims that cannot be checked","Makes a checkable claim, privately","Publishes a checkable claim with its evidence","States what result would disprove it","Publishes a correction when the data moves against them"],
+ peer:["Is the claim specific enough to be wrong?","What would disprove it?","Is the evidence attached?"],
+ art:"The published claim and the data underneath it",
+ emo:"What was the version of the number you wanted to publish instead?"},
+{c:"I6",n:"the no you kept",band:2,
+ brief:"Go back to someone who already said no. Ask a different question.",
+ stake:"The same outsider who refused",cap:"1 hour",val:"3 months",
+ comps:["2.2","2.5","3.1","3.3","4.2"],
+ scale:["Does not go back","Goes back with the same ask","Goes back with a smaller version of the same ask","Goes back with a different ask, based on what they said the first time","Obtains something, and can state what the first no actually meant"],
+ peer:["Was it the same person?","Was the second ask genuinely different?","What did the first no turn out to mean?"],
+ art:"Both asks and both answers, dated",
+ emo:"How long between the first no and the second ask?"},
+{c:"I7",n:"who am I now",band:2,
+ brief:"Describe what you do to someone who does not know you, without using the words student, trying, or hoping.",
+ stake:"One listener who does not know you",cap:"\u2014",val:"12 months",
+ comps:["1.3","2.1","4.3","4.4"],
+ scale:["Describes an aspiration","Describes the idea rather than the activity","Describes what they do, hedged","Describes what they do, unhedged, and it is true","Describes it so the listener can repeat it back correctly"],
+ peer:["Did they hedge?","Was it true?","Ask the listener to repeat it back"],
+ art:"The listener's repeat-back, recorded",
+ emo:"Which word did you most want to put back in?"},
+
+{c:"A1",n:"someone else's money",band:3,
+ brief:"Be accountable to a person who has given you money or resource. Report to them on a schedule you set yourself.",
+ stake:"A real external funder or resource-giver",cap:"\u2014",val:"3 months",
+ comps:["2.4","2.5","3.2","4.5"],
+ scale:["No external resource involved","Holds resource, does no reporting","Reports when asked","Reports on a schedule they set, including bad news","Reports bad news before being asked, with what they are doing about it"],
+ peer:["Is there a real external funder?","Was bad news reported, and when?","Would the funder say they were kept informed?"],
+ art:"The reporting schedule and the reports, including the bad one",
+ emo:"What did you delay telling them, and for how long?"},
+{c:"A2",n:"hand it over",band:3,
+ brief:"Give a piece of work you care about to someone else, with a written definition of done. Do not take it back.",
+ stake:"One other person who owns the work",cap:"\u2014",val:"6 months",
+ comps:["2.5","3.2","3.4","4.4"],
+ scale:["Does not delegate","Delegates, then redoes it","Delegates with a vague brief, and is disappointed","Delegates with a written definition of done, and accepts a different route to it","Accepts a worse-than-theirs result, and says why keeping it would have cost more"],
+ peer:["Was done written before the handover?","Did they take it back?","Would the other person do it again?"],
+ art:"The written definition of done, the result, and the other person's account",
+ emo:"What did you want to correct and did not?"},
+{c:"A3",n:"the pivot",band:3,
+ brief:"Change what you are doing on the basis of evidence, and document what the evidence was.",
+ stake:"Evidence from outside the cohort",cap:"\u2014",val:"6 months",
+ comps:["1.1","1.3","3.3","3.5","4.5"],
+ scale:["Never changes course","Changes course on preference or boredom","Changes course on evidence, reconstructed afterwards","Changes course on evidence recorded before the decision","Stated in advance what evidence would force the change, then honoured it"],
+ peer:["Was the evidence recorded before the decision?","Was the trigger set in advance?","What was given up?"],
+ art:"The evidence, the decision, and the dates in that order",
+ emo:"What did you lose that you had been proud of?"},
+{c:"A4",n:"twelve weeks",band:3,
+ brief:"Sustain one activity for twelve weeks with no external feedback loop telling you it is working.",
+ stake:"\u2014",cap:"\u2014",val:"12 months",
+ comps:["2.2","3.2","4.4","4.5"],
+ scale:["Stops within three weeks","Continues, but changes the activity weekly","Completes twelve weeks with gaps","Completes twelve weeks unbroken","Completes it, and can show what changed in the practice between week 1 and week 12"],
+ peer:["Is there a dated record for every week?","Was it the same activity throughout?","What improved?"],
+ art:"The twelve-week dated record",
+ emo:"Which week was the one you nearly stopped?"},
+{c:"A5",n:"the harder conversation",band:3,
+ brief:"Have the conversation you have been avoiding, with the person you have been avoiding it with.",
+ stake:"The other party, who confirms it happened",cap:"\u2014",val:"6 months",
+ comps:["2.5","3.4","4.2","4.4"],
+ scale:["Does not have it","Has it in writing, one way","Has it, but softens it past the point of usefulness","Says the thing, and stays in the room for the answer","The relationship is workable afterwards, confirmed by the other party"],
+ peer:["Did the other party understand what was being said?","Was it said, or implied?","Is the relationship workable?"],
+ art:"The other party's confirmation of what the conversation was about",
+ emo:"How long had you been avoiding it?"},
+{c:"A6",n:"the succession test",band:3,
+ brief:"Write down how someone else would continue your work without you. Then have them try, for one week.",
+ stake:"One substitute who runs it",cap:"\u2014",val:"12 months",
+ comps:["1.3","2.3","3.2","3.4"],
+ scale:["The work cannot be described","Describes it, but nobody tries","Someone tries, fails, and the learner intervenes","Someone tries and completes the week","They complete the week and find something the learner had not documented"],
+ peer:["Did the substitute actually run it?","What broke?","What turned out to be undocumented?"],
+ art:"The handover document and the substitute's week report",emo:null}
+];
+
+const byComp=Object.fromEntries(COMP.map((x,i)=>[x.c,{...x,i,area:+x.c[0]}]));
+const byNode=Object.fromEntries(NODES.map(n=>[n.c,n]));
+const feeds={}; COMP.forEach(x=>feeds[x.c]=[]);
+NODES.forEach(n=>n.comps.forEach(c=>feeds[c].push(n.c)));
+
+const ang=i=>-90+9+18*i;
+const pol=(r,d)=>{const a=d*Math.PI/180;return[CX+r*Math.cos(a),CY+r*Math.sin(a)];};
+const el=(t,at)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in at)e.setAttribute(k,at[k]);return e;};
+function annulus(a0,a1,r0,r1){
+  const[x0,y0]=pol(r0,a0),[x1,y1]=pol(r0,a1),[x2,y2]=pol(r1,a1),[x3,y3]=pol(r1,a0);
+  return `M${x0} ${y0}A${r0} ${r0} 0 0 1 ${x1} ${y1}L${x2} ${y2}A${r1} ${r1} 0 0 0 ${x3} ${y3}Z`;
+}
+
+const svg=document.getElementById("wheel");
+AREAS.forEach((a,k)=>svg.appendChild(el("path",{d:annulus(-90+90*k,-90+90*(k+1),HUB,RIM),
+  fill:`rgb(var(--dye-${a.id})/var(--wedge))`})));
+for(let lv=1;lv<=8;lv++)
+  svg.appendChild(el("circle",{cx:CX,cy:CY,r:rOf(lv),class:"ring"+(lv%2===0?" stage":"")}));
+svg.appendChild(el("circle",{cx:CX,cy:CY,r:RIM,class:"rim"}));
+
+const spokes={},codes={};
+COMP.forEach((x,i)=>{
+  const a=ang(i),[x1,y1]=pol(HUB,a),[x2,y2]=pol(RIM,a);
+  const ln=el("line",{x1,y1,x2,y2,class:"spoke",style:`--d:var(--dye-${x.c[0]})`});
+  svg.appendChild(ln); spokes[x.c]=ln;
+});
+
+const poly=el("polygon",{class:"poly",points:COMP.map((x,i)=>pol(rOf(PROFILE[x.c]),ang(i)).join(",")).join(" ")});
+svg.appendChild(poly);
+const vtxG=el("g",{}); svg.appendChild(vtxG);
+COMP.forEach((x,i)=>{
+  const v=PROFILE[x.c],[px,py]=pol(rOf(v),ang(i));
+  vtxG.appendChild(el("circle",{cx:px,cy:py,r:v?4:5,class:"vtx"+(v?"":" none")}));
+});
+const marks=el("g",{}); svg.appendChild(marks);
+
+svg.appendChild(el("circle",{cx:CX,cy:CY,r:HUB,class:"hub"}));
+const hl=el("text",{x:CX,y:CY,class:"hublabel","text-anchor":"middle","dominant-baseline":"central"});
+hl.textContent="no evidence"; svg.appendChild(hl);
+
+COMP.forEach((x,i)=>{
+  const[tx,ty]=pol(CODER,ang(i));
+  const t=el("text",{x:tx,y:ty,class:"code","text-anchor":"middle","dominant-baseline":"central",
+    tabindex:"0",role:"button","data-c":x.c,style:`--d:var(--dye-${x.c[0]})`,"aria-label":x.c+" "+x.n});
+  t.textContent=x.c;
+  t.addEventListener("click",()=>selComp(x.c));
+  t.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selComp(x.c);}});
+  svg.appendChild(t); codes[x.c]=t;
+});
+
+const bar=document.getElementById("bar");
+AREAS.forEach(a=>{
+  const b=document.createElement("button");
+  b.className="key"+(a.id===4?" ext":"");
+  b.style.setProperty("--d",`var(--dye-${a.id})`);
+  b.innerHTML=`<span class="dot"></span>${a.id} ${a.name}`;
+  const hi=on=>COMP.forEach(x=>{
+    codes[x.c].style.opacity = (!on||byComp[x.c].area===a.id)?1:.22;
+    spokes[x.c].style.opacity = (!on||byComp[x.c].area===a.id)?1:.25;
+  });
+  b.addEventListener("mouseenter",()=>hi(1)); b.addEventListener("mouseleave",()=>hi(0));
+  b.addEventListener("focus",()=>hi(1)); b.addEventListener("blur",()=>hi(0));
+  bar.appendChild(b);
+});
+const tg=document.createElement("label");
+tg.className="toggle";
+tg.innerHTML=`<input type="checkbox" id="pf" checked> Example profile`;
+bar.appendChild(tg);
+document.getElementById("pf").addEventListener("change",e=>showProfile(e.target.checked));
+function showProfile(on){
+  poly.style.display=on?"":"none"; vtxG.style.display=on?"":"none";
+}
+
+const cols=document.getElementById("cols");
+[1,2,3].forEach(b=>{
+  const d=document.createElement("div"); d.className="col";
+  d.innerHTML=`<h4>${BANDS[b].name}</h4><p class="sub2">${BANDS[b].sub}</p>`;
+  NODES.filter(n=>n.band===b).forEach(n=>{
+    const btn=document.createElement("button");
+    btn.innerHTML=`<span class="c">${n.c}</span>${n.n}`;
+    btn.addEventListener("click",()=>selNode(n.c));
+    d.appendChild(btn);
+  });
+  cols.appendChild(d);
+});
+
+function clearWheel(){
+  marks.innerHTML="";
+  COMP.forEach(x=>{spokes[x.c].classList.remove("on");codes[x.c].classList.remove("on");});
+}
+const ro=document.getElementById("readout");
+const pill=c=>`<button class="pill" style="--p:var(--dye-${c[0]})" onclick="selComp('${c}')">${c}</button>`;
+
+function selNode(code){
+  const n=byNode[code]; if(!n) return;
+  clearWheel();
+  const cb=document.getElementById("pf"); cb.checked=false; showProfile(false);
+  const r=BANDS[n.band].r;
+  n.comps.forEach(c=>{
+    const i=byComp[c].i, a=ang(i), [mx,my]=pol(r,a), [hx,hy]=pol(HUB,a);
+    codes[c].classList.add("on");
+    marks.appendChild(el("line",{x1:hx,y1:hy,x2:mx,y2:my,class:"reach",style:`--d:var(--dye-${c[0]})`}));
+    marks.appendChild(el("circle",{cx:mx,cy:my,r:6,class:"mark",style:`--d:var(--dye-${c[0]})`}));
+  });
+  const dye=`var(--dye-${n.comps[0][0]})`;
+  ro.style.setProperty("--d",dye);
+  ro.innerHTML=`
+    <div class="rhead"><span class="badge">${n.c}</span><span class="tag">${BANDS[n.band].name}</span></div>
+    <h2 class="rname">${n.n}</h2>
+    <p class="rarea">${BANDS[n.band].sub}</p>
+    <p class="brief">${n.brief}</p>
+    <h3>Conditions</h3>
+    <div class="req">
+      <div><dt>Outside value</dt><dd>${n.stake}</dd></div>
+      <div><dt>Affordable loss</dt><dd>${n.cap}</dd></div>
+      <div><dt>Evidence valid</dt><dd>${n.val}</dd></div>
+    </div>
+    <h3>Competences evidenced</h3>
+    <div class="pills">${n.comps.map(pill).join("")}</div>
+    <h3>Behavioural indicator scale</h3>
+    <div class="scale">${n.scale.map((s,i)=>`<div class="rung${i===4?" top":""}"><span class="n">${i+1}</span><span>${s}</span></div>`).join("")}</div>
+    <h3>Peer defense grid</h3>
+    <ul>${n.peer.map(p=>`<li>${p}</li>`).join("")}</ul>
+    <h3>Evidence artefact</h3>
+    <p class="note">${n.art}</p>
+    <h3>Emotional reflection</h3>
+    <p class="note">${n.emo?n.emo:"Not required for this challenge."}</p>`;
+  if(window.matchMedia("(max-width:960px)").matches)ro.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function selComp(code){
+  const x=byComp[code]; if(!x) return;
+  clearWheel();
+  spokes[code].classList.add("on"); codes[code].classList.add("on");
+  const cb=document.getElementById("pf"); cb.checked=true; showProfile(true);
+  const [vx,vy]=pol(rOf(PROFILE[code]),ang(x.i));
+  marks.appendChild(el("circle",{cx:vx,cy:vy,r:9,fill:"none","stroke-width":"1.5",
+    stroke:`rgb(var(--dye-${x.area}))`}));
+  const area=AREAS[x.area-1], lv=PROFILE[code], fed=feeds[code];
+  ro.style.setProperty("--d",`var(--dye-${x.area})`);
+  ro.innerHTML=`
+    <div class="rhead"><span class="badge">${code}</span><span class="tag">${area.name}</span></div>
+    <h2 class="rname">${x.n}</h2>
+    <p class="rarea">${area.src}</p>
+    <p class="brief">${x.d}</p>
+    <h3>Example profile</h3>
+    <div class="lvl"><span class="lvlnum">${lv||"\u2014"}</span><span class="note">${lv?"level "+lv+" of 8":"no evidence yet \u2014 shown as a gap, not as a zero score"}</span></div>
+    <h3>Fed by ${fed.length} challenge${fed.length===1?"":"s"}</h3>
+    <div class="pills">${fed.map(c=>`<button class="pill" style="--p:var(--dye-0)" onclick="selNode('${c}')">${c} ${byNode[c].n}</button>`).join("")}</div>
+    <h3>Reporting rule</h3>
+    <p class="note">Not reported until four independent observations across at least two different challenges. ${fed.length<2?"This competence is currently fed by too few challenges to reach that bar.":"There are enough distinct challenges here to clear that bar."}</p>`;
+  if(window.matchMedia("(max-width:960px)").matches)ro.scrollIntoView({behavior:"smooth",block:"start"});
+}
+window.selComp=selComp; window.selNode=selNode;
+
+ro.style.setProperty("--d","var(--dye-0)");
+ro.innerHTML=`<div class="empty"><p class="big">Select a challenge or a spoke.</p><p class="note">The polygon is one worked example profile. Two spokes sit on the hub: those are gaps in the evidence, shown as gaps rather than as a score of zero. Clicking a challenge hides the profile and marks the competences that challenge writes to, at the band it targets.</p></div>`;
+</script>
+</body>
+</html>

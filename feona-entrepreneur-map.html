@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FEONA — entrepreneurship competence map</title>
+<meta name="description" content="Twenty competence threads across eight levels, written by observed evidence rather than self-report. EntreComp (JRC 2016) plus a FEONA extension area.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FEONA — entrepreneurship competence map">
+<meta property="og:description" content="Twenty competence threads across eight levels, written by observed evidence rather than self-report. No aggregate score, no ranking, gaps shown as gaps.">
+<meta property="og:site_name" content="FEONA">
+<meta property="og:image" content="feona-wheel.png">
+<meta property="og:image:alt" content="A twenty-spoke competence wheel in four coloured quadrants, with eight concentric levels and unfilled cells where no evidence has been gathered.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E8E9E3;
+  --surface:#F3F3EF;
+  --sunk:#DEDFD8;
+  --ink:#1C2436;
+  --ink-soft:#5B6377;
+  --ink-faint:#8A909E;
+  --rule:rgba(28,36,54,.20);
+  --rule-soft:rgba(28,36,54,.11);
+  --q-ideas:#2F7D6E;
+  --q-resources:#2F5FA8;
+  --q-action:#A8414F;
+  --q-emotions:#71499B;
+  --focus:#1C2436;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#161B2A;
+    --surface:#1D2333;
+    --sunk:#121722;
+    --ink:#E4E6E6;
+    --ink-soft:#A2A9BA;
+    --ink-faint:#737B8D;
+    --rule:rgba(228,230,230,.22);
+    --rule-soft:rgba(228,230,230,.12);
+    --q-ideas:#55B3A0;
+    --q-resources:#6E9AE0;
+    --q-action:#DE7C88;
+    --q-emotions:#A987D1;
+    --focus:#E4E6E6;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#161B2A;
+  --surface:#1D2333;
+  --sunk:#121722;
+  --ink:#E4E6E6;
+  --ink-soft:#A2A9BA;
+  --ink-faint:#737B8D;
+  --rule:rgba(228,230,230,.22);
+  --rule-soft:rgba(228,230,230,.12);
+  --q-ideas:#55B3A0;
+  --q-resources:#6E9AE0;
+  --q-action:#DE7C88;
+  --q-emotions:#A987D1;
+  --focus:#E4E6E6;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  font-variant-numeric:tabular-nums;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 72px}
+
+/* ---------- masthead ---------- */
+.mast{display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+.mark{font-family:'Newsreader','Iowan Old Style',Georgia,serif;font-size:27px;line-height:1;letter-spacing:.01em}
+.mark span{color:var(--ink-soft)}
+.status{font-size:13px;color:var(--ink-soft);border:1px solid var(--rule);padding:3px 9px;border-radius:2px}
+
+.lede{max-width:62ch;margin:26px 0 0}
+.lede h1{
+  font-family:'Newsreader','Iowan Old Style',Georgia,serif;
+  font-weight:400;font-size:clamp(28px,4.6vw,44px);line-height:1.14;
+  margin:0 0 14px;letter-spacing:-.005em;
+}
+.lede p{margin:0 0 10px;color:var(--ink-soft);max-width:60ch}
+
+/* ---------- instrument ---------- */
+.instrument{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:34px;margin-top:34px;align-items:start}
+@media(max-width:900px){.instrument{grid-template-columns:1fr;gap:26px}}
+
+.wheelbox{position:relative}
+svg.wheel{display:block;width:100%;height:auto;max-width:100%}
+.spoke-hit{cursor:pointer;outline:none}
+.spoke-hit rect.kb{fill:none;stroke:none}
+.spoke-hit:focus-visible .wedge-focus{stroke:var(--focus);stroke-width:2;stroke-dasharray:none}
+.spokelabel{font-size:12.5px;fill:var(--ink-soft);font-weight:500}
+.spoke-hit:hover .spokelabel,.spoke-hit.sel .spokelabel{fill:var(--ink)}
+.spoke-hit.sel .spokelabel{font-weight:600}
+.levelnum{font-size:9.5px;fill:var(--ink-faint)}
+.hub-title{font-family:'Newsreader',Georgia,serif;font-size:19px;fill:var(--ink)}
+.hub-sub{font-size:11.5px;fill:var(--ink-faint)}
+.dimmed{opacity:.26}
+
+.tiphint{display:none;margin:10px 0 0;font-size:13px;color:var(--ink-faint)}
+@media(max-width:620px){
+  .spokelabel{display:none}
+  .tiphint{display:block}
+}
+
+.legend{margin-top:16px;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13.5px}
+.legend b{font-weight:500}
+.sw{display:inline-block;width:10px;height:10px;border-radius:1px;margin-right:7px;transform:translateY(1px)}
+.legend .ext{color:var(--ink-faint);font-size:12.5px;display:block;width:100%;margin-top:2px}
+
+.keyrow{margin-top:18px;padding-top:14px;border-top:1px solid var(--rule-soft);display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--ink-soft)}
+.keyrow span{display:flex;align-items:center;gap:8px}
+.keycell{width:15px;height:13px;border-radius:1px;flex:none}
+.kc-ev{background:var(--ink-soft)}
+.kc-cl{background:var(--sunk);background:color-mix(in srgb,var(--ink-soft) 30%,transparent);border:1px solid var(--ink-soft)}
+.kc-ex{border:1px solid var(--ink-faint);background:repeating-linear-gradient(45deg,var(--ink-faint) 0 1.5px,transparent 1.5px 4.5px)}
+.kc-gp{border:1px dashed var(--rule);background:none}
+
+.viewtoggle{margin-top:20px;display:flex;gap:0;border:1px solid var(--rule);border-radius:2px;width:fit-content;overflow:hidden}
+.viewtoggle button{
+  font:inherit;font-size:13.5px;padding:6px 14px;border:0;background:none;color:var(--ink-soft);cursor:pointer;
+}
+.viewtoggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.viewtoggle button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+
+/* ---------- panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--rule-soft);border-top:3px solid var(--rule);padding:22px 24px 26px;border-radius:2px;min-height:420px}
+.panel.q-ideas{border-top-color:var(--q-ideas)}
+.panel.q-resources{border-top-color:var(--q-resources)}
+.panel.q-action{border-top-color:var(--q-action)}
+.panel.q-emotions{border-top-color:var(--q-emotions)}
+.panel .area{font-size:13px;color:var(--ink-soft);margin:0 0 4px}
+.panel h2{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:26px;line-height:1.2;margin:0 0 8px}
+.panel .blurb{margin:0 0 16px;color:var(--ink-soft);max-width:54ch}
+.flag{
+  font-size:12.5px;line-height:1.5;color:var(--ink);background:var(--sunk);
+  border-left:2px solid var(--ink-faint);padding:8px 12px;margin:0 0 16px;border-radius:0 2px 2px 0;
+}
+.panel h3{font-size:12.5px;font-weight:600;letter-spacing:.01em;margin:20px 0 8px;color:var(--ink-soft)}
+.panel h3:first-of-type{margin-top:0}
+.panel p{margin:0 0 10px}
+.panel .empty{color:var(--ink-faint);font-style:italic}
+
+.ladder{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule-soft)}
+.ladder li{display:grid;grid-template-columns:18px 1fr auto;gap:12px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--rule-soft);font-size:14px}
+.ladder .lv{color:var(--ink-faint);font-size:12.5px}
+.ladder .nm{color:var(--ink)}
+.ladder .band{color:var(--ink-faint);font-size:12.5px}
+.ladder .st{font-size:12.5px;color:var(--ink-soft);text-align:right;white-space:nowrap}
+.ladder li.is-ev .nm{font-weight:600}
+.ladder li.is-gp .nm{color:var(--ink-faint)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:1px;margin-right:7px;transform:translateY(0)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px;padding:0;list-style:none}
+.chip{
+  font:inherit;font-size:12.5px;line-height:1.3;padding:4px 9px;border-radius:2px;cursor:pointer;
+  background:none;color:var(--ink);border:1px solid var(--rule);text-align:left;
+}
+.chip:hover{border-color:var(--ink-soft)}
+.chip:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.chip .l{color:var(--ink-faint)}
+.chip.q-ideas{border-left:3px solid var(--q-ideas)}
+.chip.q-resources{border-left:3px solid var(--q-resources)}
+.chip.q-action{border-left:3px solid var(--q-action)}
+.chip.q-emotions{border-left:3px solid var(--q-emotions)}
+
+.marker{display:grid;grid-template-columns:76px 1fr;gap:10px;font-size:14px;padding:7px 0;border-bottom:1px solid var(--rule-soft)}
+.marker b{font-weight:500;color:var(--ink-soft);font-size:13px}
+
+.back{font:inherit;font-size:13px;background:none;border:0;padding:0;color:var(--ink-soft);cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-bottom:14px}
+.back:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* ---------- challenges ---------- */
+.challenges{margin-top:64px;border-top:1px solid var(--rule);padding-top:26px}
+.challenges h2{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:29px;margin:0 0 8px}
+.challenges .intro{color:var(--ink-soft);max-width:66ch;margin:0 0 6px}
+.bandhead{margin:34px 0 14px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;border-bottom:1px solid var(--rule-soft);padding-bottom:7px}
+.bandhead h3{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:21px;margin:0}
+.bandhead em{font-style:normal;color:var(--ink-faint);font-size:13.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px}
+.card{
+  font:inherit;text-align:left;background:var(--surface);border:1px solid var(--rule-soft);
+  border-left:3px solid var(--rule);padding:14px 16px 15px;cursor:pointer;border-radius:0 2px 2px 0;color:var(--ink);
+}
+.card:hover{border-color:var(--ink-faint)}
+.card:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.card .code{font-size:12px;color:var(--ink-faint)}
+.card .ttl{font-family:'Newsreader',Georgia,serif;font-size:19px;line-height:1.25;margin:3px 0 7px}
+.card .sh{font-size:13.5px;color:var(--ink-soft);line-height:1.45}
+.card .st{font-size:12.5px;color:var(--ink-faint);margin-top:9px}
+.card[data-state="done"]{border-left-color:var(--ink)}
+.card[data-state="pending"]{border-left-color:var(--ink-faint)}
+.card[data-state="expired"]{border-left-color:var(--ink-faint);border-left-style:dashed}
+
+/* ---------- footer ---------- */
+footer{margin-top:66px;border-top:1px solid var(--rule);padding-top:24px;font-size:13.5px;color:var(--ink-soft)}
+footer h4{font-size:13px;font-weight:600;color:var(--ink);margin:0 0 8px}
+.fcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:26px}
+footer ul{margin:0;padding-left:18px}
+footer li{margin-bottom:6px}
+footer .fine{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule-soft);font-size:12.5px;color:var(--ink-faint);max-width:78ch}
+a{color:inherit}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="mark">FEONA <span>— entrepreneurship track</span></div>
+    <div class="status">Working prototype, in development</div>
+  </header>
+
+  <div class="lede">
+    <h1>Twenty threads of competence, written by evidence rather than claimed on a form.</h1>
+    <p>Each wedge is one competence thread. Each ring is one level, from the centre outwards. A cell fills only when a certified instructor has observed the behaviour at that level and an evidence artefact is attached. Where nothing has been observed, the cell stays open.</p>
+    <p>Select a thread on the wheel, or a challenge further down the page.</p>
+  </div>
+
+  <div class="instrument">
+    <div>
+      <div class="wheelbox"><svg class="wheel" id="wheel" viewBox="0 0 1000 1000" role="img" aria-label="Competence wheel: twenty threads across eight levels"></svg></div>
+      <p class="tiphint">Tap a wedge to name the thread and read its levels.</p>
+
+      <div class="legend" id="legend"></div>
+
+      <div class="keyrow">
+        <span><i class="keycell kc-ev"></i>Observed, artefact attached</span>
+        <span><i class="keycell kc-cl"></i>Artefact in, observation pending</span>
+        <span><i class="keycell kc-ex"></i>Past its validity period</span>
+        <span><i class="keycell kc-gp"></i>No evidence yet</span>
+      </div>
+
+      <div class="viewtoggle" role="group" aria-label="Record shown">
+        <button id="btn-sample" aria-pressed="true">Sample record</button>
+        <button id="btn-empty" aria-pressed="false">Empty record</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel" aria-live="polite"></div>
+  </div>
+
+  <section class="challenges">
+    <h2>The twenty challenges</h2>
+    <p class="intro">Every challenge has to create value for someone outside the cohort. Peers and instructors do not count as the recipient — that is the test the whole instrument rests on. One challenge writes evidence to several threads at once, so the wheel fills unevenly, which is the intended behaviour.</p>
+    <p class="intro">The current set reaches level 6. Levels 7 and 8 have no challenges written for them yet, and the wheel shows that as an empty outer band rather than hiding it.</p>
+    <div id="challenge-list"></div>
+  </section>
+
+  <footer>
+    <div class="fcols">
+      <div>
+        <h4>What this instrument does not do</h4>
+        <ul>
+          <li>No aggregate score. There is no single number for a participant, at any point.</li>
+          <li>No ranking between participants.</li>
+          <li>No back-filling. Evidence at level 3 does not create evidence at levels 1 and 2.</li>
+          <li>Missing evidence is shown as missing, never as a zero.</li>
+          <li>It evidences development, not destiny. Nothing here says what a participant will go on to do.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Who assesses</h4>
+        <ul>
+          <li>The assessment of record is the certified instructor's observation against a scaled behavioural indicator.</li>
+          <li>The peer defence runs against a fixed grid and informs the observation. It does not replace it.</li>
+          <li>Emotions threads are recorded by the learner in their own words only. Nothing infers emotion from a face, a voice or behaviour.</li>
+          <li>Evidence on the entrepreneurship track carries a validity period. A runway figure from eighteen months ago evidences nothing about today.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Framework and sources</h4>
+        <ul>
+          <li>Bacigalupo, M., Kampylis, P., Punie, Y. &amp; Van den Brande, G. (2016). <em>EntreComp: The Entrepreneurship Competence Framework</em>. JRC, Publications Office of the European Union. doi:10.2791/593884</li>
+          <li>Lackéus, M. (2015). <em>Entrepreneurship in Education</em>. OECD background paper — value creation for external stakeholders.</li>
+          <li>Schelfhout, W., Bruggeman, K. &amp; De Maeyer, S. (2016). <em>Studies in Educational Evaluation</em> — scaled behavioural indicators in place of Likert self-report.</li>
+          <li>Sarasvathy, S. — effectuation; grades several of the indicator scales.</li>
+          <li>Nabi, G., Liñán, F., Fayolle, A., Krueger, N. &amp; Walmsley, A. (2017). <em>Academy of Management Learning &amp; Education</em> — 159 studies reviewed; impact measurement predominantly short-term and subjective.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">EntreComp is a reference framework published by the European Commission's Joint Research Centre, not a standard and not a certification. FEONA reuses it under the Commission's reuse policy. Nothing here is endorsed by, approved by or produced in partnership with the European Commission. The fourth area, Emotions, is a FEONA extension drawn from Lackéus's action-reflection challenge categories; it is not part of EntreComp.</p>
+    <p class="fine">AurinkoLab ry and FEONA Oy, Helsinki. info@feona.fi · aurinkolab.fi · edu.feona.eu</p>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ data */
+
+const AREAS = {
+  ideas:     { name:"Ideas and opportunities", tag:"EntreComp area 1", css:"q-ideas" },
+  resources: { name:"Resources",               tag:"EntreComp area 2", css:"q-resources" },
+  action:    { name:"Into action",             tag:"EntreComp area 3", css:"q-action" },
+  emotions:  { name:"Emotions",                tag:"FEONA extension — not in EntreComp", css:"q-emotions" }
+};
+
+const LEVELS = [
+  { n:1, name:"Discover",   band:"Foundation"   },
+  { n:2, name:"Explore",    band:"Foundation"   },
+  { n:3, name:"Experiment", band:"Intermediate" },
+  { n:4, name:"Dare",       band:"Intermediate" },
+  { n:5, name:"Improve",    band:"Advanced"     },
+  { n:6, name:"Reinforce",  band:"Advanced"     },
+  { n:7, name:"Expand",     band:"Expert"       },
+  { n:8, name:"Transform",  band:"Expert"       }
+];
+
+const BANDNOTE = {
+  Foundation:   "Acts with support. Value created for oneself and people close by.",
+  Intermediate: "Acts with growing independence. Value created for people outside the immediate circle.",
+  Advanced:     "Takes responsibility. Value created that holds up over time.",
+  Expert:       "Drives change well beyond the participant's own project."
+};
+
+/* twenty threads, in wheel order: five per quadrant, clockwise from twelve */
+const THREADS = [
+  { id:"spot", code:"1.1",  area:"ideas", short:"Spotting opportunities", name:"Spotting opportunities",
+    blurb:"Finds and acts on chances to create value: notices a need someone actually has, rather than one that would be convenient to have found." },
+  { id:"creat", code:"1.2", area:"ideas", short:"Creativity", name:"Creativity",
+    blurb:"Develops ideas that are both new to the participant and useful to someone else. Judged on range and on what was done with the range." },
+  { id:"vis", code:"1.3",   area:"ideas", short:"Vision", name:"Vision",
+    blurb:"Works towards a picture of the future that can be described to another person clearly enough for them to act on it." },
+  { id:"value", code:"1.4", area:"ideas", short:"Valuing ideas", name:"Valuing ideas",
+    blurb:"Judges what an idea is worth to the people it is for — in money where money applies, and in other terms where it does not." },
+  { id:"ethic", code:"1.5", area:"ideas", short:"Ethical thinking", name:"Ethical and sustainable thinking",
+    blurb:"Weighs the consequences of the work, including on people who did not ask for it and do not benefit from it." },
+
+  { id:"self", code:"2.1",  area:"resources", short:"Self-awareness", name:"Self-awareness and self-efficacy",
+    blurb:"Can state what they are good at, what they are not, and what they need — and acts as though those statements are true." },
+  { id:"persev", code:"2.2",area:"resources", short:"Perseverance", name:"Motivation and perseverance",
+    blurb:"Keeps going when the work is slow, dull or unrewarded, and can say what keeps them at it." },
+  { id:"mobres", code:"2.3",area:"resources", short:"Mobilising resources", name:"Mobilising resources",
+    blurb:"Gets hold of what is needed — material, human, digital — and manages it once it is in hand." },
+  { id:"fin", code:"2.4",   area:"resources", short:"Financial literacy", name:"Financial and economic literacy",
+    blurb:"Handles real figures: what something costs, what it takes to fund, what happens when an assumption is wrong." },
+  { id:"mobpeo", code:"2.5",area:"resources", short:"Mobilising others", name:"Mobilising others",
+    blurb:"Brings people with them: persuades, recruits, and holds attention long enough for something to get done." },
+
+  { id:"init", code:"3.1",  area:"action", short:"Initiative", name:"Taking the initiative",
+    blurb:"Starts things without being asked and stays with them past the interesting part." },
+  { id:"plan", code:"3.2",  area:"action", short:"Planning", name:"Planning and management",
+    blurb:"Sets priorities, organises the work, tracks it, and changes the plan when the evidence says to." },
+  { id:"uncert", code:"3.3",area:"action", short:"Uncertainty", name:"Coping with uncertainty, ambiguity and risk",
+    blurb:"Decides and acts without full information, and can say what they were uncertain about at the time." },
+  { id:"others", code:"3.4",area:"action", short:"Collaboration", name:"Working with others",
+    blurb:"Collaborates, builds a network, and handles disagreement without either winning it or avoiding it." },
+  { id:"learn", code:"3.5", area:"action", short:"Learning by doing", name:"Learning through experience",
+    blurb:"Reflects on what happened, names what was wrong about their earlier view, and changes what they do next." },
+
+  { id:"expo", code:"4.1",  area:"emotions", short:"Exposure", name:"Exposure",
+    blurb:"Is seen by people outside the safe group — and keeps acting while being seen." },
+  { id:"reject", code:"4.2",area:"emotions", short:"Rejection recovery", name:"Rejection recovery",
+    blurb:"Carries on with purpose after a no, and can distinguish a no to the idea from a no to them." },
+  { id:"ident", code:"4.3", area:"emotions", short:"Identity work", name:"Identity work",
+    blurb:"Notices how words like founder, leader or entrepreneur fit or fail to fit, without having to resolve it." },
+  { id:"name", code:"4.4",  area:"emotions", short:"Emotional naming", name:"Emotional naming",
+    blurb:"Names what was felt, accurately and in the participant's own words, before explaining or justifying it." },
+  { id:"endure", code:"4.5",area:"emotions", short:"Endurance", name:"Endurance",
+    blurb:"Stays with something past the point where it stopped being interesting." }
+];
+
+const EMOTION_RULE = "Emotions is a FEONA extension and is not part of EntreComp. This thread is recorded by the learner in their own words. No instructor, and no software, infers emotion from a face, a voice or behaviour.";
+
+/* twenty challenges */
+const CHALLENGES = [
+  { code:"F1", band:"Foundation", title:"Problem walk", range:"Levels 1–2",
+    hook:"Five people outside the cohort describe a problem in their own words.",
+    stakeholder:"Five people outside the cohort, none of them peers or instructors. At least two confirm the conversation happened.",
+    artefact:"Field notes with names and dates, plus dated confirmation from two of the five.",
+    novice:"Asks leading questions and hears the answer they were hoping for.",
+    expert:"Asks open questions, writes down the detail that contradicts their idea, and goes back to check it.",
+    defence:"Which of these problems did you most want to be real, and what did you do about that?",
+    reflect:"Write what you felt walking up to the first stranger.",
+    validity:"No expiry.",
+    writes:[["spot",1],["init",1],["expo",1],["name",1]] },
+
+  { code:"F2", band:"Foundation", title:"Small value, no money", range:"Levels 1–2",
+    hook:"One person outside the cohort receives something useful and says so.",
+    stakeholder:"One recipient outside the cohort. No payment involved, so the only evidence of worth is what they say.",
+    artefact:"The thing delivered, or a record of it, plus a dated statement from the recipient in their words.",
+    novice:"Delivers whatever was convenient to make.",
+    expert:"Delivers what was actually asked for, then checks whether it landed.",
+    defence:"How do you know it was useful to them and not just satisfying to you?",
+    reflect:"What did it feel like to be thanked — or not to be?",
+    validity:"No expiry.",
+    writes:[["value",1],["mobpeo",1],["init",2]] },
+
+  { code:"F3", band:"Foundation", title:"Ten ideas, one problem", range:"Level 2",
+    hook:"The person whose problem it is ranks the ten ideas.",
+    stakeholder:"The external stakeholder from the problem walk ranks the list, and the ranking is kept as they gave it.",
+    artefact:"The ten ideas exactly as written before the ranking, plus the ranking.",
+    novice:"Produces ten versions of one idea.",
+    expert:"Produces genuinely different mechanisms, including options they personally dislike.",
+    defence:"Which idea did the stakeholder rank above yours, and why do you think they did?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["creat",2],["value",2]] },
+
+  { code:"F4", band:"Foundation", title:"Ask for something", range:"Level 2",
+    hook:"A real request to someone who can say no.",
+    stakeholder:"Someone outside the cohort with the standing to refuse. A refusal counts as a completed challenge.",
+    artefact:"The request exactly as sent, and the reply, including silence recorded as silence.",
+    novice:"Asks vaguely, with no deadline and no way to decline cleanly.",
+    expert:"Asks for something specific, makes refusal cheap, and names what happens either way.",
+    defence:"What made it easy for them to say no, and was that deliberate?",
+    reflect:"Write what you felt in the hour before you sent it.",
+    validity:"No expiry.",
+    writes:[["mobres",2],["reject",1],["expo",2]] },
+
+  { code:"F5", band:"Foundation", title:"What it actually costs", range:"Level 2",
+    hook:"Three real suppliers give real figures.",
+    stakeholder:"Three external suppliers or providers, each quoting a figure that can be traced back to them.",
+    artefact:"A costing sheet where every figure has a source and a date, and the unit assumptions are written down.",
+    novice:"Fills the sheet from memory or one search.",
+    expert:"Obtains quotes, states the assumptions, and handles tax and units explicitly.",
+    defence:"Which figure are you least sure of, and what would it take to be sure?",
+    reflect:"",
+    validity:"Twelve months. Costs move.",
+    writes:[["fin",2],["plan",1]] },
+
+  { code:"F6", band:"Foundation", title:"Sixty seconds, out loud", range:"Level 2",
+    hook:"An outside listener writes back what they understood.",
+    stakeholder:"An audience outside the cohort. One listener writes their own description of what was said.",
+    artefact:"The recording or a witness form, plus the listener's written description.",
+    novice:"Describes the idea.",
+    expert:"Describes what changes for the listener, and adapts when the room does not follow.",
+    defence:"Where did their description differ from yours?",
+    reflect:"Which word in their description did you not want to read?",
+    validity:"No expiry.",
+    writes:[["self",2],["ident",1],["expo",2]] },
+
+  { code:"F7", band:"Foundation", title:"A promise with a date", range:"Level 2",
+    hook:"A named outsider is promised a specific thing within seven days.",
+    stakeholder:"One named person outside the cohort who is told, in writing, what they will get and when.",
+    artefact:"The dated promise, and either delivery confirmed by them or an honest failure note they have seen.",
+    novice:"Renegotiates quietly once it starts to slip.",
+    expert:"Tells the stakeholder early, says what changes, and delivers the revised thing.",
+    defence:"What did you tell them when it started to slip?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["persev",2],["learn",2],["endure",1]] },
+
+  { code:"I1", band:"Intermediate", title:"Rough version, real users", range:"Level 3",
+    hook:"Five outsiders use a rough version. None of them want it to work.",
+    stakeholder:"Five users outside the cohort, chosen so that they have no reason to be kind about it.",
+    artefact:"Version one, the feedback log, version two, and a note of what changed between them and why.",
+    novice:"Collects praise and calls it validation.",
+    expert:"Designs the test so that it can fail, then reports the failure without softening it.",
+    defence:"What did you change that you did not want to change?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["creat",3],["spot",3],["learn",3],["uncert",3]] },
+
+  { code:"I2", band:"Intermediate", title:"First committed resource", range:"Levels 3–4",
+    hook:"An outsider commits something they could have kept.",
+    stakeholder:"One external party gives money, time, space or their name — something with a cost attached to saying yes.",
+    artefact:"The receipt, agreement or dated written commitment.",
+    novice:"Accepts a soft yes and records it as a commitment.",
+    expert:"Asks for a commitment that costs something, and takes a no as an answer.",
+    defence:"What did it cost them to say yes?",
+    reflect:"",
+    validity:"Twelve months.",
+    writes:[["value",4],["fin",3],["init",3]] },
+
+  { code:"I3", band:"Intermediate", title:"Ask above your level", range:"Level 4",
+    hook:"An approach to real authority, outside the existing network.",
+    stakeholder:"Someone with genuine authority or expertise whom the participant has no prior route to.",
+    artefact:"The approach as sent, and the response — or the silence, dated.",
+    novice:"Apologises for asking and buries the request.",
+    expert:"Makes the value of a reply obvious, follows up once, and stops.",
+    defence:"What did you offer them?",
+    reflect:"What did you tell yourself about why they had not replied?",
+    validity:"No expiry.",
+    writes:[["mobpeo",4],["reject",3],["expo",4]] },
+
+  { code:"I4", band:"Intermediate", title:"Build it from what is already here", range:"Level 3",
+    hook:"Two outside parties contribute to the delivery.",
+    stakeholder:"At least two external contributors, each giving something real and getting something back.",
+    artefact:"A resource map naming who gave what, what it was worth, and what they received in return.",
+    novice:"Lists what they wish they had and stops there.",
+    expert:"Starts from what is already in reach and gets further with it than the list predicted.",
+    defence:"What did you decide not to buy, and what did you do instead?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["mobres",3],["mobpeo",3],["uncert",4]] },
+
+  { code:"I5", band:"Intermediate", title:"Stop something", range:"Level 4",
+    hook:"A line of work is ended on evidence, and the affected outsider is told.",
+    stakeholder:"The external party affected by the decision hears it directly, from the participant.",
+    artefact:"The decision note with the evidence behind it, and the message that ended it.",
+    novice:"Lets it fade and never says so.",
+    expert:"Names the criterion that was missed and closes it cleanly, in one conversation.",
+    defence:"What would have had to be true for you to continue?",
+    reflect:"What did stopping say about you, in your own head?",
+    validity:"No expiry.",
+    writes:[["vis",4],["uncert",4],["ident",3]] },
+
+  { code:"I6", band:"Intermediate", title:"A team you did not choose", range:"Levels 3–4",
+    hook:"Assigned partners, external recipient, conflict on the record.",
+    stakeholder:"The value goes to someone outside both the team and the cohort.",
+    artefact:"The delivery, plus a conflict log recording what was disagreed and how it resolved.",
+    novice:"Records harmony and leaves the disagreement out.",
+    expert:"Records the disagreement, including their own part in causing it.",
+    defence:"What did your partner do better than you?",
+    reflect:"Name what you felt during the disagreement, before you say who was right.",
+    validity:"No expiry.",
+    writes:[["others",4],["mobpeo",3],["name",3]] },
+
+  { code:"I7", band:"Intermediate", title:"Who this is worse for", range:"Level 4",
+    hook:"One party made worse off is consulted directly.",
+    stakeholder:"A specific external party who is excluded or disadvantaged — found, contacted and asked.",
+    artefact:"The consequence audit, and notes from the affected party in their own words.",
+    novice:"Lists abstract risks that name nobody.",
+    expert:"Finds a real person the work would cost something, and asks them.",
+    defence:"Who did you not ask, and why not?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["ethic",4],["vis",3]] },
+
+  { code:"A1", band:"Advanced", title:"The same thing, three times", range:"Level 5",
+    hook:"Three different outsiders receive the same value.",
+    stakeholder:"Three separate external stakeholders, each receiving a full delivery.",
+    artefact:"Three delivery records and a written account of what changed between the first and the third.",
+    novice:"Repeats the first delivery three times.",
+    expert:"Tightens it each time and can say which evidence prompted each change.",
+    defence:"What is now standard, and what is still improvised?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["plan",5],["learn",5],["persev",5],["endure",4]] },
+
+  { code:"A2", band:"Advanced", title:"Runway", range:"Level 5",
+    hook:"A financial model with dated figures, reviewed by someone who carries financial responsibility.",
+    stakeholder:"Someone outside the cohort who is accountable for money reviews the assumptions and signs the review.",
+    artefact:"The model, every figure dated, every assumption sourced, one stated breaking point.",
+    novice:"Presents one confident scenario.",
+    expert:"States which assumption breaks it first, and what they would watch to see it coming.",
+    defence:"Which number, if wrong, ends this?",
+    reflect:"",
+    validity:"Twelve months. This is the clearest case for expiry: a runway figure from eighteen months ago evidences nothing about today.",
+    writes:[["fin",5],["plan",5],["uncert",5]] },
+
+  { code:"A3", band:"Advanced", title:"It runs without you", range:"Level 6",
+    hook:"Two weeks of continuity, confirmed by an outsider.",
+    stakeholder:"An external stakeholder confirms the thing continued for two weeks with the participant absent.",
+    artefact:"The handover material, and the stakeholder's confirmation of what happened in those two weeks.",
+    novice:"Hands over tasks and keeps the decisions.",
+    expert:"Hands over the decision rule, and lets a decision be made differently from how they would have made it.",
+    defence:"What did they do differently from you, and did you let it stand?",
+    reflect:"What did it feel like not to be needed?",
+    validity:"No expiry.",
+    writes:[["mobpeo",6],["others",5],["ident",5]] },
+
+  { code:"A4", band:"Advanced", title:"Defend it to outsiders", range:"Level 5",
+    hook:"A defence panel with at least one assessor from outside the programme.",
+    stakeholder:"An external assessor sits on the panel and completes the same fixed grid as everyone else.",
+    artefact:"The completed grid, signed by the panel, with the recording or the minute.",
+    novice:"Defends the idea.",
+    expert:"Defends the evidence, and concedes clearly where it is thin.",
+    defence:"The grid itself is the defence.",
+    reflect:"Which question did you already know you could not answer?",
+    validity:"No expiry.",
+    writes:[["self",5],["learn",6],["expo",5]] },
+
+  { code:"A5", band:"Advanced", title:"Ten approaches, three refusals", range:"Levels 5–6",
+    hook:"Ten logged external approaches, carried on past at least three refusals.",
+    stakeholder:"Ten external approaches, each logged with its outcome, whatever the outcome was.",
+    artefact:"The approach log with dates and outcomes, and a note of how the approach changed over the ten.",
+    novice:"Sends the same message ten times and calls it persistence.",
+    expert:"The tenth approach is visibly different from the first, because of what the refusals said.",
+    defence:"What did the refusals teach you that the acceptances did not?",
+    reflect:"Write what the third no felt like, and what you did that evening.",
+    validity:"No expiry.",
+    writes:[["persev",6],["reject",5],["endure",5],["name",5]] },
+
+  { code:"A6", band:"Advanced", title:"Something outside you changed", range:"Level 6",
+    hook:"An external organisation changed a practice, and will say why.",
+    stakeholder:"An external organisation confirms a change to a practice, policy or offering, and names what prompted it.",
+    artefact:"The before and after, and a statement from someone in the organisation who was party to the decision.",
+    novice:"Claims influence.",
+    expert:"Names the person who decided and what convinced them.",
+    defence:"Who decided, and what would have happened without you?",
+    reflect:"",
+    validity:"No expiry.",
+    writes:[["vis",6],["ethic",5],["init",6]] }
+];
+
+/* sample record: which challenges are in what state */
+const SAMPLE = {
+  done:    ["F1","F2","F3","F4","F6","F7","I1","I4","I6"],
+  pending: ["I3","I7"],
+  expired: ["F5","I2"]
+};
+
+/* ------------------------------------------------------- derived record */
+
+function buildRecord(useSample){
+  const rec = {};
+  THREADS.forEach(t => { rec[t.id] = {}; });
+  if(!useSample) return rec;
+  const put = (list, state) => list.forEach(code => {
+    const ch = CHALLENGES.find(c => c.code === code);
+    if(!ch) return;
+    ch.writes.forEach(([tid, lvl]) => { rec[tid][lvl] = { state, code }; });
+  });
+  put(SAMPLE.done, "evidenced");
+  put(SAMPLE.expired, "expired");
+  put(SAMPLE.pending, "claimed");
+  return rec;
+}
+
+function challengeState(code, useSample){
+  if(!useSample) return "none";
+  if(SAMPLE.done.includes(code)) return "done";
+  if(SAMPLE.pending.includes(code)) return "pending";
+  if(SAMPLE.expired.includes(code)) return "expired";
+  return "none";
+}
+
+const STATE_WORD = {
+  evidenced:"Observed",
+  claimed:"Artefact in, observation pending",
+  expired:"Past validity",
+  none:"No evidence yet"
+};
+
+/* ------------------------------------------------------------ geometry */
+
+const CX = 500, CY = 500, R0 = 92, RING = 26, NR = 8;
+const RMAX = R0 + RING * NR;           /* 300 */
+const NS = THREADS.length;             /* 20  */
+const STEP = 360 / NS;                 /* 18  */
+
+const rad = d => (d - 0) * Math.PI / 180;
+const pt = (r, deg) => [CX + r * Math.cos(rad(deg)), CY + r * Math.sin(rad(deg))];
+
+function cellPath(i, ring){
+  const a0 = -90 + i * STEP, a1 = a0 + STEP;
+  const ri = R0 + ring * RING, ro = ri + RING;
+  const [x1,y1] = pt(ro,a0), [x2,y2] = pt(ro,a1), [x3,y3] = pt(ri,a1), [x4,y4] = pt(ri,a0);
+  return `M${x1} ${y1}A${ro} ${ro} 0 0 1 ${x2} ${y2}L${x3} ${y3}A${ri} ${ri} 0 0 0 ${x4} ${y4}Z`;
+}
+function wedgePath(i, ri, ro){
+  const a0 = -90 + i * STEP, a1 = a0 + STEP;
+  const [x1,y1] = pt(ro,a0), [x2,y2] = pt(ro,a1), [x3,y3] = pt(ri,a1), [x4,y4] = pt(ri,a0);
+  return `M${x1} ${y1}A${ro} ${ro} 0 0 1 ${x2} ${y2}L${x3} ${y3}A${ri} ${ri} 0 0 0 ${x4} ${y4}Z`;
+}
+function arcPath(a0, a1, r){
+  const [x1,y1] = pt(r,a0), [x2,y2] = pt(r,a1);
+  return `M${x1} ${y1}A${r} ${r} 0 ${(a1-a0)>180?1:0} 1 ${x2} ${y2}`;
+}
+const AREA_VAR = { ideas:"--q-ideas", resources:"--q-resources", action:"--q-action", emotions:"--q-emotions" };
+
+/* ---------------------------------------------------------------- state */
+
+let useSample = true;
+let record = buildRecord(true);
+let selected = null;        /* thread id */
+let selectedChallenge = null;
+
+try{
+  const saved = localStorage.getItem("feona.view");
+  if(saved === "empty"){ useSample = false; record = buildRecord(false); }
+}catch(e){ /* storage unavailable; sample view is fine */ }
+
+/* ----------------------------------------------------------- wheel draw */
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (n, attrs) => { const e = document.createElementNS(SVGNS, n); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+
+function drawWheel(){
+  const svg = document.getElementById("wheel");
+  svg.textContent = "";
+
+  const defs = el("defs");
+  Object.keys(AREA_VAR).forEach(a => {
+    const p = el("pattern", { id:"hatch-"+a, width:6, height:6, patternUnits:"userSpaceOnUse", patternTransform:"rotate(45)" });
+    p.appendChild(el("rect", { width:6, height:6, fill:"transparent" }));
+    p.appendChild(el("rect", { width:2, height:6, fill:`var(${AREA_VAR[a]})`, opacity:.55 }));
+    defs.appendChild(p);
+  });
+  svg.appendChild(defs);
+
+  THREADS.forEach((t, i) => {
+    const g = el("g", { class:"spoke-hit", role:"button", tabindex:"0" });
+    g.dataset.thread = t.id;
+    g.setAttribute("aria-label", t.name + ", " + AREAS[t.area].name);
+
+    const cells = el("g");
+    for(let ring = 0; ring < NR; ring++){
+      const lvl = ring + 1;
+      const entry = record[t.id][lvl];
+      const st = entry ? entry.state : "none";
+      const col = `var(${AREA_VAR[t.area]})`;
+      const a = { d:cellPath(i, ring), "stroke-linejoin":"round" };
+      if(st === "evidenced"){ a.fill = col; a.stroke = "var(--paper)"; a["stroke-width"] = 1.25; }
+      else if(st === "claimed"){ a.fill = col; a["fill-opacity"] = .26; a.stroke = col; a["stroke-width"] = 1; }
+      else if(st === "expired"){ a.fill = `url(#hatch-${t.area})`; a.stroke = col; a["stroke-opacity"] = .5; a["stroke-width"] = 1; }
+      else { a.fill = "transparent"; a.stroke = "var(--rule)"; a["stroke-opacity"] = .6; a["stroke-width"] = 1; a["stroke-dasharray"] = "2 3"; }
+      cells.appendChild(el("path", a));
+    }
+    g.appendChild(cells);
+
+    g.appendChild(el("path", { class:"wedge-focus", d:wedgePath(i, R0, RMAX), fill:"transparent", stroke:"none", "pointer-events":"all" }));
+
+    const mid = -90 + i * STEP + STEP / 2;
+    const flip = mid > 90 && mid < 270;
+    const lg = el("g", { transform:`rotate(${mid} ${CX} ${CY}) translate(${CX + RMAX + 16} ${CY})${flip ? " rotate(180)" : ""}` });
+    const tx = el("text", { class:"spokelabel", x:0, y:0, "text-anchor":flip ? "end" : "start", "dominant-baseline":"middle" });
+    tx.textContent = t.short;
+    lg.appendChild(tx);
+    g.appendChild(lg);
+
+    svg.appendChild(g);
+  });
+
+  /* quadrant bands just outside the rim */
+  let qi = 0;
+  ["ideas","resources","action","emotions"].forEach(a => {
+    const a0 = -90 + qi * 90 + 1.2, a1 = -90 + (qi + 1) * 90 - 1.2;
+    svg.appendChild(el("path", { d:arcPath(a0, a1, RMAX + 5), fill:"none", stroke:`var(${AREA_VAR[a]})`, "stroke-width":3, "stroke-opacity":.85, "stroke-linecap":"butt" }));
+    qi++;
+  });
+
+  /* level numbers up the twelve-o'clock boundary */
+  const lg = el("g");
+  for(let ring = 0; ring < NR; ring++){
+    const r = R0 + ring * RING + RING / 2;
+    const tn = el("text", { class:"levelnum", x:CX, y:CY - r, "text-anchor":"middle", "dominant-baseline":"central",
+      "paint-order":"stroke", stroke:"var(--paper)", "stroke-width":"2.5", "stroke-linejoin":"round" });
+    tn.textContent = String(ring + 1);
+    lg.appendChild(tn);
+  }
+  svg.appendChild(lg);
+
+  /* hub */
+  svg.appendChild(el("circle", { cx:CX, cy:CY, r:R0 - 9, fill:"var(--surface)", stroke:"var(--rule-soft)" }));
+  const h1 = el("text", { class:"hub-title", id:"hub-1", x:CX, y:CY - 8, "text-anchor":"middle" });
+  const h2 = el("text", { class:"hub-sub", id:"hub-2", x:CX, y:CY + 14, "text-anchor":"middle" });
+  svg.appendChild(h1); svg.appendChild(h2);
+
+  svg.querySelectorAll(".spoke-hit").forEach(g => {
+    g.addEventListener("click", () => selectThread(g.dataset.thread));
+    g.addEventListener("keydown", ev => {
+      if(ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); selectThread(g.dataset.thread); }
+    });
+  });
+
+  fitViewBox();
+  paintHub();
+  paintSelection();
+}
+
+/* on a phone the radial labels are dropped, so crop to the wheel itself */
+function fitViewBox(){
+  const svg = document.getElementById("wheel");
+  if(!svg) return;
+  svg.setAttribute("viewBox", window.innerWidth <= 620 ? "185 185 630 630" : "0 0 1000 1000");
+}
+window.addEventListener("resize", fitViewBox);
+
+function paintHub(){
+  const h1 = document.getElementById("hub-1"), h2 = document.getElementById("hub-2");
+  if(!h1) return;
+  if(selected){
+    const t = THREADS.find(x => x.id === selected);
+    const words = t.short.split(" ");
+    h1.textContent = words.length > 2 ? words.slice(0, 2).join(" ") : t.short;
+    h2.textContent = words.length > 2 ? words.slice(2).join(" ") : AREAS[t.area].name;
+  }else{
+    h1.textContent = "20 threads";
+    h2.textContent = "8 levels";
+  }
+}
+
+function paintSelection(){
+  document.querySelectorAll(".spoke-hit").forEach(g => {
+    const on = !selected || g.dataset.thread === selected;
+    g.classList.toggle("dimmed", !on);
+    g.classList.toggle("sel", g.dataset.thread === selected);
+  });
+}
+
+/* ---------------------------------------------------------------- panel */
+
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const panel = document.getElementById("panel");
+
+function setPanelArea(area){
+  panel.className = "panel" + (area ? " " + AREAS[area].css : "");
+}
+
+function renderIntro(){
+  selected = null; selectedChallenge = null;
+  setPanelArea(null);
+  panel.innerHTML = `
+    <h2>How to read this</h2>
+    <p class="blurb">Three of the four areas are EntreComp's own: ideas and opportunities, resources, into action. The fourth, Emotions, is an extension FEONA added and is not part of EntreComp.</p>
+    <h3>Rings</h3>
+    <p>Level 1 at the centre, level 8 at the rim. EntreComp's competences are not sequential, so this is a wheel rather than a prerequisite tree — a participant can hold level 4 on one thread and nothing at all on its neighbour.</p>
+    <h3>Cells</h3>
+    <p>A cell fills when an instructor has observed the behaviour at that level and an artefact is attached. Nothing else fills it: not a questionnaire, not a peer verdict on its own, not attendance.</p>
+    <h3>Empty is a reading</h3>
+    <p>An open cell means no evidence has been gathered. It does not mean the participant scored zero, and it is never converted into one.</p>`;
+  paintHub(); paintSelection();
+}
+
+function renderThread(id){
+  const t = THREADS.find(x => x.id === id);
+  if(!t) return;
+  setPanelArea(t.area);
+
+  const rows = LEVELS.map(L => {
+    const e = record[t.id][L.n];
+    const st = e ? e.state : "none";
+    const cls = st === "evidenced" ? "is-ev" : st === "none" ? "is-gp" : "is-cl";
+    const via = e ? " · " + e.code : "";
+    return `<li class="${cls}"><span class="lv">${L.n}</span><span class="nm">${esc(L.name)} <span class="band">${esc(L.band)}</span></span><span class="st">${esc(STATE_WORD[st])}${esc(via)}</span></li>`;
+  }).join("");
+
+  const writers = CHALLENGES.filter(c => c.writes.some(w => w[0] === id));
+  const chips = writers.map(c => {
+    const lvl = c.writes.find(w => w[0] === id)[1];
+    return `<li><button class="chip ${AREAS[t.area].css}" data-challenge="${c.code}">${esc(c.code)} ${esc(c.title)} <span class="l">level ${lvl}</span></button></li>`;
+  }).join("");
+
+  const gaps = LEVELS.filter(L => !record[t.id][L.n]).map(L => L.n);
+  const gapline = gaps.length === 8
+    ? "No evidence on this thread yet."
+    : gaps.length ? `No evidence at level${gaps.length > 1 ? "s" : ""} ${gaps.join(", ")}.` : "Evidence at every level.";
+
+  panel.innerHTML = `
+    <button class="back" id="back">Back to how to read this</button>
+    <p class="area">${esc(AREAS[t.area].name)} — ${esc(AREAS[t.area].tag)}</p>
+    <h2>${esc(t.code)} ${esc(t.name)}</h2>
+    <p class="blurb">${esc(t.blurb)}</p>
+    ${t.area === "emotions" ? `<p class="flag">${esc(EMOTION_RULE)}</p>` : ""}
+    <h3>Levels</h3>
+    <ul class="ladder">${rows}</ul>
+    <p class="empty" style="margin-top:10px">${esc(gapline)}</p>
+    <h3>Challenges that write here</h3>
+    <ul class="chips">${chips}</ul>`;
+  wirePanel();
+  paintHub(); paintSelection();
+}
+
+function renderChallenge(code){
+  const c = CHALLENGES.find(x => x.code === code);
+  if(!c) return;
+  selectedChallenge = code;
+  const st = challengeState(code, useSample);
+  const firstArea = THREADS.find(t => t.id === c.writes[0][0]).area;
+  setPanelArea(firstArea);
+
+  const chips = c.writes.map(([tid, lvl]) => {
+    const t = THREADS.find(x => x.id === tid);
+    return `<li><button class="chip ${AREAS[t.area].css}" data-thread="${tid}"><span class="l">${esc(t.code)}</span> ${esc(t.short)} <span class="l">level ${lvl}</span></button></li>`;
+  }).join("");
+
+  const touchesEmotions = c.writes.some(w => THREADS.find(t => t.id === w[0]).area === "emotions");
+
+  panel.innerHTML = `
+    <button class="back" id="back">Back to how to read this</button>
+    <p class="area">${esc(c.code)} · ${esc(c.band)} · ${esc(c.range)}</p>
+    <h2>${esc(c.title)}</h2>
+    <p class="blurb">${esc(c.hook)}</p>
+    <h3>External stakeholder</h3>
+    <p>${esc(c.stakeholder)}</p>
+    <h3>Evidence artefact</h3>
+    <p>${esc(c.artefact)}</p>
+    <h3>What the instructor observes</h3>
+    <div class="marker"><b>Novice</b><span>${esc(c.novice)}</span></div>
+    <div class="marker"><b>Expert</b><span>${esc(c.expert)}</span></div>
+    <h3>Peer defence question</h3>
+    <p>${esc(c.defence)}</p>
+    ${c.reflect ? `<h3>Reflection prompt, written by the learner</h3><p>${esc(c.reflect)}</p>` : ""}
+    <h3>Validity</h3>
+    <p>${esc(c.validity)}</p>
+    <h3>Writes evidence to</h3>
+    <ul class="chips">${chips}</ul>
+    ${touchesEmotions ? `<p class="flag" style="margin-top:16px">${esc(EMOTION_RULE)}</p>` : ""}
+    <p class="empty" style="margin-top:14px">${useSample ? "In the sample record: " + esc({done:"observed and closed", pending:"artefact in, observation pending", expired:"past its validity period", none:"not attempted"}[st]) : "Empty record — no challenge attempted."}</p>`;
+  wirePanel();
+  selected = null;
+  paintHub(); paintSelection();
+}
+
+function wirePanel(){
+  const b = document.getElementById("back");
+  if(b) b.addEventListener("click", renderIntro);
+  panel.querySelectorAll("[data-challenge]").forEach(x => x.addEventListener("click", () => renderChallenge(x.dataset.challenge)));
+  panel.querySelectorAll("[data-thread]").forEach(x => x.addEventListener("click", () => selectThread(x.dataset.thread)));
+}
+
+function selectThread(id){
+  selected = id; selectedChallenge = null;
+  renderThread(id);
+  if(window.innerWidth <= 900) panel.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* ------------------------------------------------------- lists & legend */
+
+function drawLegend(){
+  const box = document.getElementById("legend");
+  box.innerHTML = ["ideas","resources","action","emotions"].map(a =>
+    `<span><i class="sw" style="background:var(${AREA_VAR[a]})"></i><b>${esc(AREAS[a].name)}</b></span>`
+  ).join("") + `<span class="ext">Emotions is a FEONA extension, not part of EntreComp. Rings run level 1 at the centre to level 8 at the rim.</span>`;
+}
+
+function drawChallenges(){
+  const box = document.getElementById("challenge-list");
+  const bands = [
+    ["Foundation",   "Seven challenges, levels 1–2. " + BANDNOTE.Foundation],
+    ["Intermediate", "Seven challenges, levels 3–4. " + BANDNOTE.Intermediate],
+    ["Advanced",     "Six challenges, levels 5–6. " + BANDNOTE.Advanced]
+  ];
+  box.innerHTML = bands.map(([band, note]) => {
+    const cards = CHALLENGES.filter(c => c.band === band).map(c => {
+      const st = challengeState(c.code, useSample);
+      const line = { done:"Observed and closed", pending:"Artefact in, observation pending", expired:"Past its validity period", none:"Not attempted" }[st];
+      return `<button class="card" data-challenge="${c.code}" data-state="${st}">
+        <div class="code">${esc(c.code)} · ${esc(c.range)}</div>
+        <div class="ttl">${esc(c.title)}</div>
+        <div class="sh">${esc(c.hook)}</div>
+        <div class="st">${useSample ? esc(line) : "Empty record"}</div>
+      </button>`;
+    }).join("");
+    return `<div class="bandhead"><h3>${esc(band)}</h3><em>${esc(note)}</em></div><div class="grid">${cards}</div>`;
+  }).join("");
+  box.querySelectorAll("[data-challenge]").forEach(x => x.addEventListener("click", () => {
+    renderChallenge(x.dataset.challenge);
+    document.querySelector(".instrument").scrollIntoView({ behavior:"smooth", block:"start" });
+  }));
+}
+
+/* ---------------------------------------------------------------- setup */
+
+function setView(sample){
+  useSample = sample;
+  record = buildRecord(sample);
+  try{ localStorage.setItem("feona.view", sample ? "sample" : "empty"); }catch(e){}
+  document.getElementById("btn-sample").setAttribute("aria-pressed", String(sample));
+  document.getElementById("btn-empty").setAttribute("aria-pressed", String(!sample));
+  drawWheel();
+  drawChallenges();
+  if(selectedChallenge) renderChallenge(selectedChallenge);
+  else if(selected) renderThread(selected);
+  else renderIntro();
+}
+
+document.getElementById("btn-sample").addEventListener("click", () => setView(true));
+document.getElementById("btn-empty").addEventListener("click", () => setView(false));
+
+drawLegend();
+setView(useSample);
+</script>
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FEONA STEM skills map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --panel:#E4E5E1; --face:#F5F5F2; --ink:#1D2126; --slate:#61666D; --hair:#C9CBC6;
+  --dye-M:176 62 40; --dye-E:181 121 20; --dye-C:58 78 168; --dye-F:138 51 104; --dye-G:33 116 90; --dye-0:97 102 109;
+  --wedge:.062; --fill:.13;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --panel:#15171A; --face:#1E2126; --ink:#E9EAE6; --slate:#9AA0A6; --hair:#343840;
+    --dye-M:228 108 78; --dye-E:226 165 60; --dye-C:126 147 234; --dye-F:203 110 168; --dye-G:80 188 150; --dye-0:150 156 163;
+    --wedge:.095; --fill:.2;
+  }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--panel); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px; margin:0 auto; padding:40px 28px 72px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--slate); margin:0 0 10px;
+}
+h1{
+  font-family:"Archivo",sans-serif; font-variation-settings:"wdth" 118,"wght" 600;
+  font-size:clamp(30px,4.4vw,46px); line-height:1.05; letter-spacing:-.012em; margin:0 0 12px;
+}
+.sub{max-width:56ch; color:var(--slate); margin:0}
+header{border-bottom:1px solid var(--hair); padding-bottom:26px; margin-bottom:26px}
+
+.keys{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px}
+.key{
+  display:inline-flex; align-items:center; gap:8px; padding:6px 13px 6px 10px;
+  border:1px solid var(--hair); background:var(--face); border-radius:2px; cursor:pointer;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.02em; color:var(--ink);
+}
+.key .dot{width:9px; height:9px; border-radius:50%; background:rgb(var(--d)); flex:none}
+.key:hover,.key:focus-visible{border-color:rgb(var(--d)); outline:none}
+
+.layout{display:grid; grid-template-columns:minmax(0,1.42fr) minmax(0,1fr); gap:30px; align-items:start}
+@media (max-width:940px){.layout{grid-template-columns:1fr}}
+
+.stage{background:var(--face); border:1px solid var(--hair); border-radius:3px; padding:10px}
+svg{display:block; width:100%; height:auto; touch-action:manipulation}
+
+.ring{fill:none; stroke:var(--hair); stroke-width:1; stroke-dasharray:2 6}
+.tick{stroke:var(--hair); stroke-width:1}
+.tick.maj{stroke:var(--slate); stroke-width:1.2; opacity:.6}
+.rim{fill:none; stroke:var(--hair); stroke-width:1}
+.link{stroke:var(--slate); stroke-width:1; opacity:.32; fill:none}
+.hub{fill:var(--face); stroke:var(--hair); stroke-width:1}
+.hublabel{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.18em; fill:var(--slate); text-transform:uppercase}
+.rlabel{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; fill:var(--slate); opacity:.85}
+
+.node{cursor:pointer; outline:none}
+.node circle{fill:rgb(var(--d)/var(--fill)); stroke:rgb(var(--d)); stroke-width:1.2}
+.node text{font-family:"IBM Plex Mono",monospace; font-weight:500; fill:var(--ink); text-anchor:middle; dominant-baseline:central; pointer-events:none}
+.node:hover circle,.node:focus-visible circle{stroke-width:2.6}
+.node.on circle{fill:rgb(var(--d)/.9); stroke-width:2.6}
+.node.on text{fill:var(--face)}
+.node.mute{opacity:.22}
+.needle{fill:rgb(var(--d)); opacity:0; transform-box:view-box; transform-origin:480px 480px}
+.needle.on{opacity:1}
+@media (prefers-reduced-motion:no-preference){
+  .node circle{transition:fill .18s,stroke-width .18s}
+  .node{transition:opacity .2s}
+  .needle{transition:transform .5s cubic-bezier(.2,.8,.25,1),opacity .3s}
+}
+
+.readout{background:var(--face); border:1px solid var(--hair); border-radius:3px; padding:26px 26px 30px; position:sticky; top:24px}
+@media (max-width:940px){.readout{position:static}}
+.empty{color:var(--slate)}
+.empty .big{font-family:"Archivo",sans-serif; font-variation-settings:"wdth" 112,"wght" 500; font-size:19px; color:var(--ink); margin:0 0 6px}
+.rhead{display:flex; align-items:baseline; gap:12px; margin-bottom:4px}
+.code{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500; letter-spacing:.08em; padding:3px 8px; border-radius:2px; background:rgb(var(--d)/var(--fill)); color:rgb(var(--d))}
+.lvl{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--slate)}
+.rname{font-family:"Archivo",sans-serif; font-variation-settings:"wdth" 116,"wght" 600; font-size:27px; line-height:1.12; letter-spacing:-.01em; margin:6px 0 2px}
+.rbranch{font-size:13px; color:var(--slate); margin:0 0 18px}
+.brief{margin:0 0 22px; padding-left:14px; border-left:2px solid rgb(var(--d))}
+h3{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--slate); margin:0 0 10px; padding-top:18px; border-top:1px solid var(--hair)}
+.bars{display:grid; gap:7px; margin:0 0 4px}
+.bar{display:grid; grid-template-columns:96px 1fr 34px; align-items:center; gap:10px; font-size:13px}
+.bar .track{display:block; height:7px; background:rgb(var(--d)/.16); border-radius:1px; overflow:hidden}
+.bar .fillx{display:block; height:100%; background:rgb(var(--d)); border-radius:1px}
+.bar .num{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--slate); text-align:right}
+ul{margin:0; padding:0; list-style:none}
+ul li{position:relative; padding-left:20px; margin-bottom:8px; font-size:14px}
+ul li::before{content:""; position:absolute; left:2px; top:9px; width:7px; height:1px; background:rgb(var(--d))}
+.meta{display:grid; gap:9px; font-size:13px}
+.meta div{display:grid; grid-template-columns:106px 1fr; gap:10px}
+.meta dt{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--slate); margin:2px 0 0}
+.meta dd{margin:0}
+
+.index{margin-top:44px; border-top:1px solid var(--hair); padding-top:30px}
+.cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:26px}
+.col h4{font-family:"Archivo",sans-serif; font-variation-settings:"wdth" 110,"wght" 600; font-size:15px; margin:0 0 3px}
+.col .path{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--slate); margin:0 0 12px; letter-spacing:.02em}
+.col button{
+  display:block; width:100%; text-align:left; background:none; border:0; border-top:1px solid var(--hair);
+  padding:8px 0; cursor:pointer; color:var(--ink); font:inherit; font-size:13.5px;
+}
+.col button:hover,.col button:focus-visible{color:rgb(var(--d)); outline:none}
+.col button .c{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--slate); margin-right:9px}
+@media (max-width:560px){.wrap{padding:28px 15px 56px}.stage{padding:4px}}
+footer{margin-top:44px; padding-top:20px; border-top:1px solid var(--hair); color:var(--slate); font-size:12.5px; max-width:74ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">FEONA.edtech</p>
+  <h1>STEM skills map</h1>
+  <p class="sub">Every ring is a level of difficulty. Every wedge is a branch. Each node is a build a learner defends to peers while an instructor records what they actually did. Select a node to read its specification.</p>
+</header>
+
+<div class="keys" id="keys"></div>
+
+<div class="layout">
+  <div class="stage"><svg id="dial" viewBox="0 0 960 960" role="img" aria-labelledby="dt dd"><title id="dt">FEONA STEM skills map</title><desc id="dd">A circular map. The centre holds six shared core builds. Five coloured wedges radiate outward, one per branch, with nodes placed on rings by difficulty level.</desc></svg></div>
+  <aside class="readout" id="readout" aria-live="polite"></aside>
+</div>
+
+<section class="index">
+  <p class="eyebrow">Node index</p>
+  <div class="cols" id="cols"></div>
+</section>
+
+<footer>Assessment of record is the instructor observation, not the peer verdict. The peer defense generates its own evidence on the evaluator: whether they can name a criterion, justify with evidence, and disagree without deflating the builder. Divergence between the two is the inter-rater reliability signal. No node is gated &mdash; completing one suggests the next.</footer>
+
+</div>
+
+<script>
+const CX=480, CY=480, R=[0,96,184,258,333,413], NR={1:26,2:24,3:24,4:25,5:29};
+
+const BR=[
+ {id:"M",name:"Mechanics & structures",path:"Mechanical design \u00b7 structural engineering"},
+ {id:"E",name:"Electronics & circuits",path:"Embedded systems \u00b7 electrical engineering"},
+ {id:"C",name:"Code & control",path:"Robotics \u00b7 automation"},
+ {id:"F",name:"Digital fabrication",path:"Product design \u00b7 industrial design"},
+ {id:"G",name:"Green tech & energy",path:"Energy systems \u00b7 sustainability engineering"}
+];
+
+const N=[
+{c:"01",b:"0",l:1,n:"first joint",brief:"Join two materials three different ways. Pick one and say why.",
+ d:{logic:25,spatial:25,resilience:10,efficiency:20,collaboration:20},
+ peer:["Are the three joins genuinely different, or three versions of one?","Can the builder name a trade-off for each?","Was the choice made before or after testing?"],
+ obs:["Reaches for a third option unprompted","Describes a join by what it resists, not what it looks like","Handles the material before deciding"],
+ pre:"\u2014",un:"02 measure twice"},
+{c:"02",b:"0",l:1,n:"measure twice",brief:"Build to a supplied spec sheet, within 2 mm on every dimension.",
+ d:{spatial:40,logic:20,efficiency:20,resilience:10,collaboration:10},
+ peer:["Is every dimension inside tolerance?","Measured, or eyeballed?","Checked before cutting, or after?"],
+ obs:["Converts a drawing into an order of operations","Re-measures after each cut","Marks the material rather than holding the number in their head"],
+ pre:"01 first joint",un:"03 closed loop"},
+{c:"03",b:"0",l:1,n:"closed loop",brief:"Make something that changes what it does when the input changes.",
+ d:{logic:40,collaboration:20,spatial:15,resilience:15,efficiency:10},
+ peer:["Does it respond?","Can the builder trace the signal out loud, in order?","What happens when the input is removed?"],
+ obs:["Tests the input before wiring the output","Traces cause and effect in sequence rather than guessing","Isolates the stage that failed"],
+ pre:"02 measure twice",un:"04 break it"},
+{c:"04",b:"0",l:1,n:"break it",brief:"Load a build until it fails. The predicted failure point is written down first.",
+ d:{logic:30,resilience:30,spatial:20,efficiency:10,collaboration:10},
+ peer:["Was the prediction written before the test?","Was it right?","Can they explain the gap between prediction and result?"],
+ obs:["Commits to a prediction in public","Treats a wrong prediction as information, not embarrassment","Returns to the build after failure without prompting"],
+ pre:"03 closed loop",un:"05 two heads \u00b7 M2 load path"},
+{c:"05",b:"0",l:1,n:"two heads",brief:"Paired build. The brief is split in half and neither half works alone.",
+ d:{collaboration:45,logic:20,spatial:15,efficiency:10,resilience:10},
+ peer:["Did the two halves fit?","Who defined the join, and when?","Was it agreed, or assumed?"],
+ obs:["Defines the interface before building","Checks in mid-build rather than at the end","Changes their own half to accommodate the partner"],
+ pre:"04 break it",un:"06 the rebuild"},
+{c:"06",b:"0",l:1,n:"the rebuild",brief:"Remake 02 with half the material. It still has to meet spec.",
+ d:{efficiency:40,spatial:20,logic:20,resilience:15,collaboration:5},
+ peer:["Half the mass?","Still inside tolerance?","What was removed, and on what reasoning?"],
+ obs:["Removes material where load is lowest, not where cutting is easiest","Can point at the part they were afraid to cut","Re-tests rather than assuming"],
+ pre:"05 two heads",un:"all branch entries"},
+
+{c:"M2",b:"M",l:2,n:"load path",brief:"Span 400 mm using 50 g of material and carry the most load. Two builds allowed.",
+ d:{spatial:35,logic:25,efficiency:20,resilience:15,collaboration:5},
+ peer:["Span met and mass limit respected?","Can they point at where it failed and say why?","Did exactly one thing change between build 1 and build 2?"],
+ obs:["Sketches before cutting","Predicts the failure point before loading","Isolates a single variable between builds"],
+ pre:"04 break it",un:"M3a cantilever \u00b7 M3b moving parts"},
+{c:"M3a",b:"M",l:3,n:"cantilever",brief:"Reach 300 mm horizontally from a single anchor. Nothing may support the far end.",
+ d:{spatial:45,logic:20,efficiency:20,resilience:10,collaboration:5},
+ peer:["Reach achieved with one anchor?","Where is the highest stress, and how do they know?","Was mass added, or moved?"],
+ obs:["Reasons about leverage rather than adding bulk","Tests deflection incrementally","Distinguishes stiffness from strength in their own words"],
+ pre:"M2 load path",un:"M4 the crumple"},
+{c:"M3b",b:"M",l:3,n:"moving parts",brief:"Build a mechanism that turns rotation into straight-line motion.",
+ d:{spatial:35,logic:30,resilience:15,collaboration:10,efficiency:10},
+ peer:["Does it run a full cycle without binding?","Can they name where the friction is?","Ratio measured, or estimated?"],
+ obs:["Debugs by isolating one joint at a time","Adjusts clearance deliberately rather than forcing","Runs the cycle repeatedly before calling it done"],
+ pre:"M2 load path",un:"M4 the crumple"},
+{c:"M4",b:"M",l:4,n:"the crumple",brief:"Protect an egg from a 2 m drop. Then do it again with 30% less mass.",
+ d:{spatial:30,logic:25,efficiency:25,resilience:15,collaboration:5},
+ peer:["Survived both drops?","Mass reduction verified on a scale?","Which part did the work, and which part was insurance?"],
+ obs:["Distinguishes absorbing energy from resisting it","Cuts the insurance and keeps the mechanism","Accepts a failed second attempt as a result"],
+ pre:"M3a cantilever or M3b moving parts",un:"M5 bridge under crowd"},
+{c:"M5",b:"M",l:5,n:"bridge under crowd",brief:"A span that carries a moving load, not a static one. Team of three, one week.",
+ d:{spatial:30,logic:25,collaboration:25,efficiency:12,resilience:8},
+ peer:["Did the load travel the full span?","Who owned which section, and how did the sections join?","What did the team change after the first test?"],
+ obs:["Team agrees the interface before parallel work starts","Uses the first test to plan, not to celebrate","Individual contributions stay traceable inside the team result"],
+ pre:"M4 the crumple",un:"pathway \u2014 mechanical design"},
+
+{c:"E2",b:"E",l:2,n:"first current",brief:"Light three LEDs at equal brightness from one source, and explain the arrangement.",
+ d:{logic:40,spatial:20,efficiency:20,resilience:10,collaboration:10},
+ peer:["Equal brightness by eye and by meter?","Can they draw what they built?","What happens if one is removed?"],
+ obs:["Draws the circuit before building it","Measures rather than assumes","Predicts the effect of removing a branch"],
+ pre:"03 closed loop",un:"E3a sense it \u00b7 E3b power budget"},
+{c:"E3a",b:"E",l:3,n:"sense it",brief:"A circuit that reacts to light, heat or moisture. The learner chooses which.",
+ d:{logic:40,resilience:20,efficiency:15,spatial:15,collaboration:10},
+ peer:["Does it react ten times out of ten?","Where is the threshold, and how was it set?","Are false triggers accounted for?"],
+ obs:["Tests the sensor alone before adding the output","Sets a threshold from data rather than by feel","Repeats the test to check reliability"],
+ pre:"E2 first current",un:"E4 find the fault"},
+{c:"E3b",b:"E",l:3,n:"power budget",brief:"Run a given load for ten minutes on a fixed battery. Predict the runtime first.",
+ d:{efficiency:40,logic:30,resilience:10,collaboration:10,spatial:10},
+ peer:["Was the runtime prediction written first?","Was actual runtime measured?","Where did the difference come from?"],
+ obs:["Calculates before building","Identifies the largest draw rather than the most visible one","Revises the estimate using the measurement"],
+ pre:"E2 first current",un:"E4 find the fault"},
+{c:"E4",b:"E",l:4,n:"find the fault",brief:"Diagnose a circuit deliberately broken by another learner. Rebuilding is not allowed.",
+ d:{logic:45,resilience:20,spatial:15,collaboration:15,efficiency:5},
+ peer:["Fault found?","Was the search systematic, or random?","Could they explain the fault to the person who made it?"],
+ obs:["Halves the search space rather than checking in order","States a hypothesis before testing it","Does not reach for the rebuild"],
+ pre:"E3a sense it or E3b power budget",un:"E5 field station"},
+{c:"E5",b:"E",l:5,n:"field station",brief:"A sensor unit that logs outdoors, unattended, for 24 hours. Team of two or three.",
+ d:{logic:30,efficiency:25,collaboration:20,resilience:15,spatial:10},
+ peer:["Did it survive 24 hours?","Is the data usable?","What failed, and was it anticipated?"],
+ obs:["Plans for the failure mode before deployment","Divides work by subsystem with a defined interface","Reports honestly on gaps in the data"],
+ pre:"E4 find the fault",un:"pathway \u2014 embedded systems"},
+
+{c:"C2",b:"C",l:2,n:"follow the line",brief:"A robot that tracks a line. It must recover after being lifted off the course.",
+ d:{logic:45,resilience:20,spatial:15,efficiency:10,collaboration:10},
+ peer:["Completes the course?","Recovers after interruption?","Can they state the correction rule?"],
+ obs:["Changes one parameter at a time","Watches the robot rather than the code when diagnosing","Describes behaviour as a rule, not as a list of events"],
+ pre:"03 closed loop",un:"C3a if this then that \u00b7 C3b the loop that ends"},
+{c:"C3a",b:"C",l:3,n:"if this then that",brief:"Behaviour that changes with a condition, and the condition comes from the world.",
+ d:{logic:45,resilience:15,spatial:15,collaboration:15,efficiency:10},
+ peer:["Does the condition actually come from a sensor?","What happens at the boundary value?","Were both branches tested?"],
+ obs:["Tests the edge case unprompted","Writes the condition before the action","Names what happens when neither branch applies"],
+ pre:"C2 follow the line",un:"C4 two robots, one corridor"},
+{c:"C3b",b:"C",l:3,n:"the loop that ends",brief:"A routine that stops on a measured value, not on a timer.",
+ d:{logic:50,efficiency:15,resilience:15,spatial:10,collaboration:10},
+ peer:["Does it stop on the value?","What is the exit condition, stated exactly?","What happens if the value is never reached?"],
+ obs:["Identifies the non-terminating case","Adds a safeguard without being told","Distinguishes \u2018it worked\u2019 from \u2018it will always work\u2019"],
+ pre:"C2 follow the line",un:"C4 two robots, one corridor"},
+{c:"C4",b:"C",l:4,n:"two robots, one corridor",brief:"Two robots share a corridor and must not collide. No central controller. Pairs.",
+ d:{logic:35,collaboration:30,resilience:15,spatial:15,efficiency:5},
+ peer:["Zero collisions over ten runs?","Was the rule agreed, or did it just emerge?","Does it still work if the robots swap roles?"],
+ obs:["Negotiates a protocol before coding","Tests the symmetric case","Accepts a partner\u2019s rule over their own when it is better"],
+ pre:"C3a if this then that or C3b the loop that ends",un:"C5 sort it"},
+{c:"C5",b:"C",l:5,n:"sort it",brief:"A machine that sorts objects by a physical property. Report the error rate. Team of three.",
+ d:{logic:30,collaboration:25,spatial:20,efficiency:15,resilience:10},
+ peer:["Is the error rate measured, not estimated?","Which stage causes most of the errors?","Did the team fix the mechanism, or the code?"],
+ obs:["Measures before optimising","Attributes error to a stage rather than to \u2018the machine\u2019","Reports the real rate, including the bad runs"],
+ pre:"C4 two robots, one corridor",un:"pathway \u2014 robotics"},
+
+{c:"F2",b:"F",l:2,n:"draw to cut",brief:"Model a part, cut it, and make it fit an existing object. One attempt at the material.",
+ d:{spatial:45,logic:20,efficiency:20,resilience:10,collaboration:5},
+ peer:["Does it fit?","Was the original measured, or guessed?","What allowance was made, and why?"],
+ obs:["Measures the target object before modelling","Adds allowance deliberately rather than hopefully","Checks the file against the machine before cutting"],
+ pre:"02 measure twice",un:"F3a tolerance \u00b7 F3b nest it"},
+{c:"F3a",b:"F",l:3,n:"tolerance",brief:"Design a press fit that holds without glue or fasteners. Three different sizes.",
+ d:{spatial:40,logic:25,efficiency:20,resilience:10,collaboration:5},
+ peer:["Do all three hold?","Can they state the clearance used?","Was the fit tuned by number, or by sanding?"],
+ obs:["Changes the model rather than the finished part","Records what each attempt used","Treats fit as a range, not a single value"],
+ pre:"F2 draw to cut",un:"F4 for someone else"},
+{c:"F3b",b:"F",l:3,n:"nest it",brief:"Fit a full part set on one sheet. Minimise waste and report the percentage.",
+ d:{efficiency:45,spatial:30,logic:15,resilience:5,collaboration:5},
+ peer:["Is everything on one sheet?","Was the waste percentage calculated?","Is cut direction or grain respected?"],
+ obs:["Rotates parts to close gaps rather than resizing them","Calculates the waste rather than eyeballing it","Balances waste against cut quality"],
+ pre:"F2 draw to cut",un:"F4 for someone else"},
+{c:"F4",b:"F",l:4,n:"for someone else",brief:"Build to a brief written by another learner. Three questions are allowed, no more.",
+ d:{collaboration:35,spatial:25,logic:20,efficiency:15,resilience:5},
+ peer:["Does it meet the brief as written?","Were the three questions well chosen?","Where did the brief and the build diverge?"],
+ obs:["Spends questions on ambiguity, not on preference","Builds what was asked before improving it","Separates the client\u2019s intent from their own taste"],
+ pre:"F3a tolerance or F3b nest it",un:"F5 small run"},
+{c:"F5",b:"F",l:5,n:"small run",brief:"Produce five identical units. Measure and report the variation between them. Pairs.",
+ d:{efficiency:30,spatial:25,logic:20,collaboration:20,resilience:5},
+ peer:["Five complete units?","Is variation measured on a stated dimension?","What caused the spread?"],
+ obs:["Builds a jig or a process rather than repeating by hand","Measures every unit, not the best one","Distinguishes process variation from a one-off mistake"],
+ pre:"F4 for someone else",un:"pathway \u2014 product design"},
+
+{c:"G2",b:"G",l:2,n:"catch the sun",brief:"Orient a panel for maximum output across a day. Log the output every hour.",
+ d:{logic:30,spatial:30,efficiency:25,resilience:10,collaboration:5},
+ peer:["Were hourly readings actually taken?","Was the orientation reasoned, or copied?","What was the peak, and when?"],
+ obs:["Predicts the peak before measuring","Keeps the record without being reminded","Connects a reading to its physical cause"],
+ pre:"02 measure twice",un:"G3a store it \u00b7 G3b where it leaks"},
+{c:"G3a",b:"G",l:3,n:"store it",brief:"Capture energy in one form and release it in another. Measure both ends.",
+ d:{logic:35,efficiency:30,resilience:15,spatial:15,collaboration:5},
+ peer:["Were both ends measured?","Is efficiency stated as a number?","Where did the rest of the energy go?"],
+ obs:["Accounts for losses instead of ignoring them","Measures input and output in comparable units","Does not round the result in their own favour"],
+ pre:"G2 catch the sun",un:"G4 measured claim"},
+{c:"G3b",b:"G",l:3,n:"where it leaks",brief:"Find the largest energy loss in a given system. Cut it. Prove you cut it.",
+ d:{efficiency:35,logic:35,spatial:15,resilience:10,collaboration:5},
+ peer:["Was the largest loss found, or just the easiest one?","Were before and after both measured?","Is the improvement bigger than the measurement error?"],
+ obs:["Ranks the losses before acting","Measures the baseline first","Distinguishes a real change from noise"],
+ pre:"G2 catch the sun",un:"G4 measured claim"},
+{c:"G4",b:"G",l:4,n:"measured claim",brief:"Make an efficiency claim about your own build and defend it with your own data.",
+ d:{logic:40,efficiency:25,collaboration:20,resilience:10,spatial:5},
+ peer:["Is the claim specific enough to be wrong?","Does the data support it?","What result would disprove it?"],
+ obs:["States a claim that could fail","Concedes when the data does not support the claim","Separates what was measured from what was inferred"],
+ pre:"G3a store it or G3b where it leaks",un:"G5 off grid"},
+{c:"G5",b:"G",l:5,n:"off grid",brief:"Power a defined load for twelve hours with no mains supply. Team of three.",
+ d:{efficiency:30,collaboration:25,logic:25,resilience:15,spatial:5},
+ peer:["Did the load run for the full period?","Was the budget planned, or discovered?","What was the margin at the end?"],
+ obs:["Plans the energy budget before building","Monitors during the run, not only at the end","Reports the margin honestly, including a near-miss"],
+ pre:"G4 measured claim",un:"pathway \u2014 energy systems"}
+];
+
+const DIMS=["logic","spatial","resilience","efficiency","collaboration"];
+const pol=(r,deg)=>{const a=deg*Math.PI/180;return[CX+r*Math.cos(a),CY+r*Math.sin(a)];};
+const el=(t,at)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in at)e.setAttribute(k,at[k]);return e;};
+const bi=id=>BR.findIndex(b=>b.id===id);
+const ctr=id=>-90+72*bi(id);
+
+function place(nd){
+  if(nd.b==="0"){const i=+nd.c-1;return pol(R[1],-90+60*i);}
+  const a=ctr(nd.b);
+  if(nd.l===2)return pol(R[2],a);
+  if(nd.l===3)return pol(R[3],a+(nd.c.endsWith("a")?-19:19));
+  return pol(R[nd.l],a);
+}
+N.forEach(n=>{const p=place(n);n.x=p[0];n.y=p[1];n.r=NR[n.l];});
+
+function annulus(a0,a1,r0,r1){
+  const[x0,y0]=pol(r0,a0),[x1,y1]=pol(r0,a1),[x2,y2]=pol(r1,a1),[x3,y3]=pol(r1,a0);
+  return `M${x0} ${y0}A${r0} ${r0} 0 0 1 ${x1} ${y1}L${x2} ${y2}A${r1} ${r1} 0 0 0 ${x3} ${y3}Z`;
+}
+function trim(a,b,pad){
+  const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
+  return[a.x+ux*(a.r+pad),a.y+uy*(a.r+pad),b.x-ux*(b.r+pad),b.y-uy*(b.r+pad)];
+}
+
+const svg=document.getElementById("dial");
+BR.forEach((b,i)=>{
+  const a=-90+72*i;
+  svg.appendChild(el("path",{d:annulus(a-36,a+36,132,446),fill:`rgb(var(--dye-${b.id})/var(--wedge))`}));
+});
+svg.appendChild(el("circle",{cx:CX,cy:CY,r:132,fill:`rgb(var(--dye-0)/var(--wedge))`}));
+[2,3,4,5].forEach(i=>svg.appendChild(el("circle",{cx:CX,cy:CY,r:R[i],class:"ring"})));
+svg.appendChild(el("circle",{cx:CX,cy:CY,r:458,class:"rim"}));
+for(let a=0;a<360;a+=6){
+  const maj=(a-36)%72===0,[x1,y1]=pol(maj?442:450,a-90),[x2,y2]=pol(458,a-90);
+  svg.appendChild(el("line",{x1,y1,x2,y2,class:"tick"+(maj?" maj":"")}));
+}
+for(let i=0;i<6;i++){const[x2,y2]=pol(R[1]-NR[1]-6,-90+60*i);svg.appendChild(el("line",{x1:CX,y1:CY,x2,y2,class:"link"}));}
+BR.forEach((b,i)=>{
+  const a=-90+72*i,[x1,y1]=pol(129,a),[x2,y2]=pol(R[2]-NR[2]-7,a);
+  svg.appendChild(el("line",{x1,y1,x2,y2,class:"link"}));
+});
+const byc=Object.fromEntries(N.map(n=>[n.c,n]));
+N.filter(n=>n.b!=="0").forEach(n=>{
+  const b=n.b,pairs=[];
+  if(n.l===3)pairs.push([byc[b+"2"],n]);
+  if(n.l===4){pairs.push([byc[b+"3a"],n]);pairs.push([byc[b+"3b"],n]);}
+  if(n.l===5)pairs.push([byc[b+"4"],n]);
+  pairs.forEach(([p,q])=>{if(!p)return;const[x1,y1,x2,y2]=trim(p,q,7);svg.appendChild(el("line",{x1,y1,x2,y2,class:"link"}));});
+});
+[2,3,4,5].forEach(i=>{
+  const[x,y]=pol(R[i],-126);
+  const t=el("text",{x,y:y-9,class:"rlabel","text-anchor":"middle"});t.textContent="L"+i;svg.appendChild(t);
+});
+const needle=el("path",{d:"M942 480L958 473L958 487Z",class:"needle",id:"needle"});
+svg.appendChild(needle);
+svg.appendChild(el("circle",{cx:CX,cy:CY,r:44,class:"hub"}));
+const hl=el("text",{x:CX,y:CY,class:"hublabel","text-anchor":"middle","dominant-baseline":"central"});
+hl.textContent="start";svg.appendChild(hl);
+
+N.forEach(n=>{
+  const g=el("g",{class:"node",tabindex:"0",role:"button","data-c":n.c,style:`--d:var(--dye-${n.b})`,
+    "aria-label":`${n.c} ${n.n}, level ${n.l}`});
+  g.appendChild(el("circle",{cx:n.x,cy:n.y,r:n.r}));
+  const t=el("text",{x:n.x,y:n.y,"font-size":n.c.length>2?11:13});t.textContent=n.c;
+  g.appendChild(t);
+  g.addEventListener("click",()=>sel(n.c));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();sel(n.c);}});
+  svg.appendChild(g);
+});
+
+const keys=document.getElementById("keys");
+[{id:"0",name:"Shared core"}].concat(BR).forEach(b=>{
+  const btn=document.createElement("button");
+  btn.className="key";btn.style.setProperty("--d",`var(--dye-${b.id})`);
+  btn.innerHTML=`<span class="dot"></span>${b.name}`;
+  btn.addEventListener("mouseenter",()=>hi(b.id));
+  btn.addEventListener("mouseleave",()=>hi(null));
+  btn.addEventListener("focus",()=>hi(b.id));
+  btn.addEventListener("blur",()=>hi(null));
+  keys.appendChild(btn);
+});
+function hi(id){
+  document.querySelectorAll(".node").forEach(g=>{
+    g.classList.toggle("mute",id!==null&&byc[g.dataset.c].b!==id);
+  });
+}
+
+const cols=document.getElementById("cols");
+[{id:"0",name:"Shared core",path:"Completed by every learner"}].concat(BR).forEach(b=>{
+  const d=document.createElement("div");
+  d.className="col";d.style.setProperty("--d",`var(--dye-${b.id})`);
+  d.innerHTML=`<h4>${b.name}</h4><p class="path">${b.path}</p>`;
+  N.filter(n=>n.b===b.id).forEach(n=>{
+    const btn=document.createElement("button");
+    btn.innerHTML=`<span class="c">${n.c}</span>${n.n}`;
+    btn.addEventListener("click",()=>sel(n.c));
+    d.appendChild(btn);
+  });
+  cols.appendChild(d);
+});
+
+const ro=document.getElementById("readout");
+function empty(){
+  ro.style.setProperty("--d","var(--dye-0)");
+  ro.innerHTML=`<div class="empty"><p class="big">Select a node.</p><p>Rings run from L1 at the centre to L5 at the rim. Two nodes sit side by side at L3 &mdash; either one opens L4.</p></div>`;
+}
+function sel(code){
+  const n=byc[code];if(!n)return;
+  document.querySelectorAll(".node").forEach(g=>g.classList.toggle("on",g.dataset.c===code));
+  const nd=document.getElementById("needle");
+  const ang=Math.atan2(n.y-CY,n.x-CX)*180/Math.PI;
+  nd.style.setProperty("--d",`var(--dye-${n.b})`);
+  nd.style.transform=`rotate(${ang}deg)`;
+  nd.classList.add("on");
+  const br=n.b==="0"?{name:"Shared core",path:"Completed by every learner"}:BR[bi(n.b)];
+  ro.style.setProperty("--d",`var(--dye-${n.b})`);
+  ro.innerHTML=`
+    <div class="rhead"><span class="code">${n.c}</span><span class="lvl">Level ${n.l}</span></div>
+    <h2 class="rname">${n.n}</h2>
+    <p class="rbranch">${br.name}</p>
+    <p class="brief">${n.brief}</p>
+    <h3>Evidence weighting</h3>
+    <div class="bars">${DIMS.map(k=>`<div class="bar"><span>${k}</span><span class="track"><span class="fillx" style="width:${n.d[k]*2}%"></span></span><span class="num">${n.d[k]}</span></div>`).join("")}</div>
+    <h3>Peer defense grid</h3>
+    <ul>${n.peer.map(p=>`<li>${p}</li>`).join("")}</ul>
+    <h3>Instructor observation markers</h3>
+    <ul>${n.obs.map(o=>`<li>${o}</li>`).join("")}</ul>
+    <h3>Position</h3>
+    <div class="meta">
+      <div><dt>Prerequisite</dt><dd>${n.pre}</dd></div>
+      <div><dt>Suggests</dt><dd>${n.un}</dd></div>
+      <div><dt>Pathway</dt><dd>${br.path}</dd></div>
+    </div>`;
+  if(window.matchMedia("(max-width:940px)").matches)ro.scrollIntoView({behavior:"smooth",block:"start"});
+}
+empty();
+</script>
+</body>
+</html>
